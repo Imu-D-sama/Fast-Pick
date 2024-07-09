@@ -711,7 +711,6 @@ def start(dodge=False, check=False):
                 return
             if (check == True):
                 buttonStartText.configure(text='Agent Select Screen Found')
-                playedMatches.append(client.pregame_fetch_match()['ID'])
                 ally = client.pregame_fetch_match()['AllyTeam']
                 ally_team = ally['TeamID']
                 ally_result = "Null"
