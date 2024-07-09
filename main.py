@@ -278,7 +278,7 @@ def selRegion():
             json.dump(config, f, indent=4)
     comboboxAgents.configure(state= "readonly")
     comboboxRegion.configure(state= "disabled")
-    buttonStart.configure(state= "normal", command=start)
+    buttonStart.configure(state= "normal", command=startButton)
     buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False))
     buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True))
     buttonRegion.configure(text="Change", command=changeRegion)
