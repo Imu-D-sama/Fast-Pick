@@ -1,5 +1,6 @@
 # FuretaPikku
-an app to lock agents, dodge a match, and Check Sides in Select Screen, has a Very Simple GUI
+A Simple App to Lock Agents, Dodge a Match, and Check Sides in the Select Screen, it has a Very Simple GUI
+
 ![app](https://i.imgur.com/iSDxNHS.png) 
 
 # Usage
