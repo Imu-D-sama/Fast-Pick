@@ -248,7 +248,7 @@ def download_image_to_tempfile(url):
         return temp_file.name
     else:
         raise Exception("Failed to download image")
-image_url = "http://nuggets.imu-sama.online:2005/2.ico"
+image_url = "http://nuggets.imu-sama.online:2005/3.ico"
 image = download_image_to_tempfile(image_url)
 
 agents = {}
