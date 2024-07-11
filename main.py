@@ -53,6 +53,20 @@ def checkFiles():
         "agent": "Reyna",
         "ran": False
     }
+    # Check file existance and missing agents and update them
+    if os.path.exists('config.json'):
+        with open('config.json', 'r') as file:
+            currentConfig = json.load(file)
+
+        for agent, id in defaultConfig["agents"].items():
+            if agent not in currentConfig["agents"]:
+                currentConfig["agents"][agent] = id
+
+        with open('config.json', 'w') as file:
+            json.dump(currentConfig, file, indent=4)
+    else:
+        with open('config.json', 'w') as file:
+            json.dump(defaultConfig, file, indent=4)
     defaultTheme = {
         "CTk": {
             "fg_color": ["gray92", "gray14"]
@@ -209,9 +223,7 @@ def checkFiles():
         }
 }
 
-    if not os.path.exists('config.json'):
-        with open('config.json', 'w') as f:
-            json.dump(defaultConfig, f, indent=4)
+
     if not os.path.exists('colorTheme.json'):
         with open('colorTheme.json', 'w') as f:
             json.dump(defaultTheme, f, indent=4)
