@@ -8,6 +8,7 @@ import glob
 import difflib
 import sys
 import time
+import pyperclip
 from valclient.client import Client
 from PIL import Image
 from io import BytesIO
@@ -279,9 +280,10 @@ app.iconbitmap(image)
 # Top image
 img = customtkinter.CTkImage(light_image=Image.open(image), dark_image=Image.open(image), size=(170,170))
 imgLabel = customtkinter.CTkLabel(app, text="", image=img)
-imgLabel.pack(pady= 30)
+imgLabel.place(relx= 0.45, rely= 0.08)
 def findKeysByValue(ob, value):
-    keys = [key for key, Value in ob.items() if Value == value]
+    value_lower = value.lower()
+    keys = [key for key, val in ob.items() if isinstance(val, str) and val.lower() == value_lower]
     return keys
 
 # region select frame and options
@@ -295,8 +297,9 @@ def selRegion():
     comboboxAgents.configure(state= "readonly")
     comboboxRegion.configure(state= "disabled")
     buttonStart.configure(state= "normal", command=startButton)
-    buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False))
-    buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True))
+    buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False, names=False))
+    buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True, names=False))
+    buttonStartNames.configure(state="normal", command=lambda: start(dodge= False, check= False, names=True))
     buttonRegion.configure(text="Change", command=changeRegion)
     buttonStartText.configure(text= "Select Your Agent and then Press Start", text_color=white_text)
 def changeRegion():
@@ -308,6 +311,7 @@ def changeRegion():
     buttonStart.configure(state= "disabled")
     buttonStartDodge.configure(state="disabled")
     buttonStartCheck.configure(state="disabled")
+    buttonStartNames.configure(state="disabled")
     comboboxRegion.configure(state= "readonly")
     buttonStartText.configure(text= "Select Your Agent and then Press Start", text_color=white_text)
     buttonRegion.configure(text= "Start", command=selRegion)
@@ -691,6 +695,8 @@ buttonStartDodge = customtkinter.CTkButton(master=start_frame, text="Dodge", sta
 buttonStartDodge.place(relx=0.35, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartCheck = customtkinter.CTkButton(master=start_frame, text="Check Side", state="disabled", width= 85)
 buttonStartCheck.place(relx=0.65, rely=0.4, anchor= customtkinter.CENTER)
+buttonStartNames = customtkinter.CTkButton(master=start_frame, text="Get Hidden Names", state="disabled", width= 85)
+buttonStartNames.place(relx=0.88, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartText = customtkinter.CTkLabel(master=start_frame, text="Pick your Agent or Action and Start :)", text_color=white_text)
 buttonStartText.place(relx=0.5, rely=0.7, anchor= customtkinter.CENTER)
 
@@ -700,10 +706,10 @@ def stop():
     running = False
     buttonStart.configure(text="Start", command=startButton)
 
-def start(dodge=False, check=False):
+def start(dodge=False, check=False, names=False):
     print("Starting...")
     global running
-    if ((dodge == False) and (check == False)):
+    if ((dodge == False) and (check == False) and (names==False)):
         print("running set to True")
         running = True
     with open('config.json', 'r') as f:
@@ -717,29 +723,92 @@ def start(dodge=False, check=False):
         buttonStartText.configure(text="Looks like VALORANT isn't running", text_color=red_text)
         print(f'{e}')
         return
-    if (dodge == True) or (check == True):
+    if (dodge == True) or (check == True) or (names == True):
         sessionState = client.fetch_presence(client.puuid)['sessionLoopState']
-        if ((sessionState == "PREGAME")):
-            if (dodge == True):
-                buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
-                client.pregame_quit_match()
-                buttonStartText.configure(text='Successfully dodged the Match', text_color=white_text)
-                return
-            if (check == True):
-                buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
-                ally = client.pregame_fetch_match()['AllyTeam']
-                ally_team = ally['TeamID']
-                ally_result = "Null"
-                side_color = "#DCE4EE"
-                if (ally_team == 'Red'):
-                    ally_result = 'Attacker'
-                    side_color = red_text
-                elif (ally_team == 'Blue'):
-                    ally_result = 'Defender'
-                    side_color = blue_text
+        if ((sessionState == "PREGAME") or (sessionState == "INGAME")):
+            if sessionState == "PREGAME" and names == False:
+                if (dodge == True):
+                    buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
+                    client.pregame_quit_match()
+                    buttonStartText.configure(text='Successfully dodged the Match', text_color=white_text)
+                    return
+                if (check == True):
+                    buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
+                    ally = client.pregame_fetch_match()['AllyTeam']
+                    ally_team = ally['TeamID']
+                    ally_result = "Null"
+                    side_color = "#DCE4EE"
+                    if (ally_team == 'Red'):
+                        ally_result = 'Attacker'
+                        side_color = red_text
+                    elif (ally_team == 'Blue'):
+                        ally_result = 'Defender'
+                        side_color = blue_text
 
-                buttonStartText.configure(text=f'you are: {ally_result}', text_color=side_color)
+                    buttonStartText.configure(text=f'you are: {ally_result}', text_color=side_color)
+                    return
+            elif sessionState != "PREGAME" and names == False:
+                buttonStartText.configure(text='You Must Be In Agent Select !!', text_color=red_text)
                 return
+            elif sessionState == "INGAME" and names == True:
+                buttonStartText.configure(text='Getting Hidden Names', text_color=white_text)
+                matchId = client.coregame_fetch_player()['MatchID']
+                currentMatch = client.coregame_fetch_match(matchId)
+                players = []
+                for player in currentMatch['Players']:
+                    if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
+                        continue
+                    players.append(player)
+                if not players:
+                    buttonStartText.configure(text='No Hidden Names Found', text_color=red_text)
+                    return
+                else:
+                    buttonStartText.configure(text='Found Hidden Names !!', text_color=white_text)
+                    newWindow = customtkinter.CTkToplevel(app)
+                    newWindow.geometry("400x390")
+                    newWindow.title("FuretaPikku Agent Names")
+                    newWindow.resizable(0, 0)
+                    newWindow.after(250, lambda: newWindow.iconbitmap(image))
+                    newWindow.grab_set()
+                    mainFrame = customtkinter.CTkScrollableFrame(newWindow, 300, 300, 20)
+                    button = customtkinter.CTkLabel(mainFrame, text="Hidden Names Click To Copy:")
+                    button.pack(pady=5, anchor="nw")
+                    mainFrame.pack(padx= 20, pady= 10)
+                    def kill():
+                        newWindow.destroy()
+                        newWindow.update()
+                    doneButton = customtkinter.CTkButton(newWindow, text="Done", command=kill)
+                    doneButton.pack(padx=20,pady=5)
+                    for hiddenPlayer in players:
+                        ally_team = hiddenPlayer['TeamID']
+                        ally_result = "Null"
+                        side_color = "#DCE4EE"
+                        if (ally_team == 'Red'):
+                            ally_result = 'Attacker'
+                            side_color = red_text
+                        elif (ally_team == 'Blue'):
+                            ally_result = 'Defender'
+                            side_color = blue_text
+                        agent_keys = findKeysByValue(agents, hiddenPlayer['CharacterID'])
+                        agent = agent_keys[0] if agent_keys else "Undefined"
+                        playerId = hiddenPlayer['Subject']
+                        playerNameData = client.put(
+                            endpoint="/name-service/v2/players", 
+                            endpoint_type="pd", 
+                            json_data=[playerId]
+                        )[0]
+                        playerName = playerNameData['GameName']
+                        playerTag = f"#{playerNameData['TagLine']}"
+                        fullName = f"{playerName}{playerTag}"
+                        def copyNames():
+                            pyperclip.copy(fullName)
+                        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=copyNames, text_color=side_color)
+                        button.pack(pady=5, anchor="nw")
+                return
+            elif sessionState != "INGAME" and names== True:
+                buttonStartText.configure(text='You Must Be Pass The Agent Select !!', text_color=red_text)
+                return
+            return
         else:
             buttonStartText.configure(text='Start a Game First !!', text_color=red_text)
             return
@@ -782,13 +851,13 @@ def startButton():
 if ranBefore != True:
     comboboxRegion.set(value= findKeysByValue(regions, region)[0])
     comboboxAgents.configure(state="disabled")
-    buttonStart.configure(state="disabled")
     buttonStartText.configure(text="Please Select Your Region First", text_color=white_text)
 elif ranBefore == True:
     comboboxRegion.set(value= findKeysByValue(regions, region)[0])
     comboboxRegion.configure(state="disabled")
     buttonRegion.configure(text="Change", command= changeRegion)
     buttonStart.configure(state="normal", command= startButton)
-    buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False))
-    buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True))
+    buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False, names=False))
+    buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True, names=False))
+    buttonStartNames.configure(state="normal", command=lambda: start(dodge=False, check=False, names=True))
 app.mainloop()
