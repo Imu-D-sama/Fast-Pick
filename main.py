@@ -40,7 +40,8 @@ def checkFiles():
                 "Gekko": "E370FA57-4757-3604-3648-499E1F642D3F",
                 "Deadlock": "CC8B64C8-4B25-4FF9-6E7F-37B4DA43D235",
                 "Iso": "0E38B510-41A8-5780-5E8F-568B2A4F2D6C",
-                "Clove": "1DBF2EDD-4729-0984-3115-DAA5EED44993"
+                "Clove": "1DBF2EDD-4729-0984-3115-DAA5EED44993",
+                "Harbor": "95B78ED7-4637-86D9-7E41-71BA8C293152"
             },
         "regions": {
             "Europe": "eu",
