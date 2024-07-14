@@ -802,9 +802,7 @@ def start(dodge=False, check=False, names=False):
                         playerName = playerNameData['GameName']
                         playerTag = f"#{playerNameData['TagLine']}"
                         fullName = f"{playerName}{playerTag}"
-                        def copyNames():
-                            pyperclip.copy(fullName)
-                        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=copyNames, text_color=side_color)
+                        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: pyperclip.copy(fullName), text_color=side_color)
                         button.pack(pady=5, anchor="nw")
                 return
             elif sessionState != "INGAME" and names== True:
