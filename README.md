@@ -1,7 +1,5 @@
 # FuretaPikku
 
----
-
 A Simple App to Get Players Stats, Lock Agents, Dodge a Match, Check Sides in the Select Screen, and Get Hidden Player Names, With A Very Simple GUI
 
 ![app](https://i.imgur.com/7B0A7lx.png)
@@ -13,8 +11,6 @@ A Simple App to Get Players Stats, Lock Agents, Dodge a Match, Check Sides in th
 ![Stats](https://i.imgur.com/wPE9Eny.png)
 
 # # Usage
-
----
 
 **First You Gotta Pick Your Region From The Menu**
 
@@ -39,7 +35,5 @@ A Simple App to Get Players Stats, Lock Agents, Dodge a Match, Check Sides in th
 3. Done :)
 
 # # Is It Bannable ?
-
----
 
 **USE THIS AT YOUR OWN RISK.** The VALORANT API this app uses is against The [Riot Terms Of Service](https://www.riotgames.com/en/terms-of-service) So There's no guarantee That you Won't Get Banned
