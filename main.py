@@ -10,6 +10,7 @@ import sys
 import time
 import base64
 import pyperclip
+import copy
 from valclient.client import Client
 from PIL import Image
 from io import BytesIO
@@ -259,6 +260,7 @@ playedMatches = []
 white_text = "#DCE4EE"
 red_text = "#ff0f0f"
 blue_text = "#00FFFF"
+startTheGame = "Start/Restart Valorant First!!!"
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -288,42 +290,68 @@ def findKeysByValue(ob, value):
     keys = [key for key, val in ob.items() if isinstance(val, str) and val.lower() == value_lower]
     return keys
 
-# region select frame and options
-def selRegion():
+def showSelected():
+    util_frame.pack(padx=20, pady=20)
+    util_frame.place(relx=0.015, rely =0.45)
+    
+    agent_frame.pack(padx=20, pady=20)
+    agent_frame.place(relx=0.51, rely =0.45)
+    
+    start_frame.pack(padx=20, pady=20)
+    start_frame.place(relx=0.08, rely =0.7)
+    
+    region_frame.pack_forget()
+    region_frame.place_forget()    
+def selectRegion():
     newRegion = str(comboboxRegion.get())
     newRegion = regions[newRegion]
     with open('config.json', 'w') as f:
-            config['region'] = newRegion
-            config['ran'] = True
-            json.dump(config, f, indent=4)
-    comboboxAgents.configure(state= "readonly")
-    comboboxRegion.configure(state= "disabled")
-    buttonStart.configure(state= "normal", command=startButton)
-    buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False, names=False))
-    buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True, names=False))
-    buttonStartNames.configure(state="normal", command=lambda: start(dodge= False, check= False, names=True))
-    buttonRegion.configure(text="Change", command=changeRegion)
-    buttonStartText.configure(text= "Select Your Agent and then Press Start", text_color=white_text)
-def changeRegion():
-    with open('config.json', 'w') as f:
-            config['region'] = "eu"
-            config['ran'] = False
-            json.dump(config, f, indent=4)
-    comboboxAgents.configure(state= "disabled")
-    buttonStart.configure(state= "disabled")
-    buttonStartDodge.configure(state="disabled")
-    buttonStartCheck.configure(state="disabled")
-    buttonStartNames.configure(state="disabled")
-    comboboxRegion.configure(state= "readonly")
-    buttonStartText.configure(text= "Select Your Agent and then Press Start", text_color=white_text)
-    buttonRegion.configure(text= "Start", command=selRegion)
-region_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_radius=20)
-region_frame.pack(padx=20, pady=20)
-region_frame.place(relx=0.015, rely =0.45)
-comboboxRegion = customtkinter.CTkComboBox(master=region_frame, values=list(regions.keys()), state="readonly")
-comboboxRegion.place(relx=0.5, rely=0.3, anchor= customtkinter.CENTER)
-buttonRegion = customtkinter.CTkButton(master=region_frame, text="Select", command=selRegion)
-buttonRegion.place(relx=0.5, rely=0.6, anchor= customtkinter.CENTER)
+        config['region'] = newRegion
+        config['ran'] = True
+        json.dump(config, f, indent=4)
+    with open('config.json', 'r') as f:
+        newR = json.load(f)
+        region = newR['region']
+    client = Client(region=newRegion)
+    try:
+        client.activate()
+    except Exception as e:
+        labelRegionStats.configure(text="Make Sure That Valorant Is Running", text_color=white_text)
+        print(f'{e}')
+        return
+    buttonStartRegion.configure(text=f"Change Region {findKeysByValue(regions, region)[0]}", command= showRegionSelect)
+    showSelected()
+def showRegionSelect():
+    util_frame.pack_forget()
+    util_frame.place_forget()
+    
+    agent_frame.pack_forget()
+    agent_frame.place_forget()
+    
+    start_frame.pack_forget()
+    start_frame.place_forget()
+    
+    region_frame.pack(padx=20, pady=20)
+    region_frame.place(relx=0.03, rely=0.5)
+region_frame = customtkinter.CTkFrame(app, 848, 280)
+region_frame.pack_propagate(False)
+comboboxRegion = customtkinter.CTkComboBox(region_frame, values=list(regions.keys()), state="readonly")
+comboboxRegion.place(relx=0.424,rely=0.359)
+comboboxRegion.set(value=findKeysByValue(regions, region)[0])
+buttonRegion = customtkinter.CTkButton(region_frame, text="Select", command=selectRegion)
+buttonRegion.place(relx=0.424,rely=0.5)
+labelRegion = customtkinter.CTkLabel(region_frame, text="Please Select Your Region:")
+labelRegion.place(relx=0.42,rely=0.2)
+labelRegionStats = customtkinter.CTkLabel(region_frame, text="Make Sure That Valorant Is Running", text_color=white_text)
+labelRegionStats.place(relx=0.507,rely=0.69, anchor= customtkinter.CENTER)
+    
+# region select frame and options
+
+util_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_radius=20)
+buttonGetNames = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names", state="disabled", width= 85)
+buttonGetNames.place(relx=0.5, rely=0.69, anchor= customtkinter.CENTER)
+buttonGetNamesWithStats = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names With Stats", state="disabled", width= 85)
+buttonGetNamesWithStats.place(relx=0.5, rely=0.36, anchor= customtkinter.CENTER)
 '''
 Advanced Scrollable Dropdown class for customtkinter widgets
 Author: Akash Bora
@@ -673,12 +701,724 @@ class CTkScrollableDropdown(customtkinter.CTkToplevel):
         
         for key in self.widgets.keys():
             self.widgets[key].configure(**kwargs)
+# CTkTable Widget by Akascape
+# License: MIT
+# Author: Akash Bora
+class CTkTable(customtkinter.CTkFrame):
+    """ CTkTable Widget """
+    
+    def __init__(
+        self,
+        master: any,
+        row: int = None,
+        column: int = None,
+        padx: int = 1, 
+        pady: int = 0,
+        width: int = 140,
+        height: int = 28,
+        values: list = None,
+        colors: list = [None, None],
+        orientation: str = "horizontal",
+        color_phase: str = "horizontal",
+        border_width: int = 0,
+        text_color: str or tuple = None, # type: ignore
+        border_color: str or tuple = None, # type: ignore
+        font: tuple = None,
+        header_color: str or tuple = None, # type: ignore
+        corner_radius: int = 25,
+        write: str = False,
+        command = None,
+        anchor: str = "c",
+        hover_color: str or tuple = None, # type: ignore
+        hover: bool = False,
+        justify: str = "center",
+        wraplength: int = 1000,
+        **kwargs):
+        
+        super().__init__(master, fg_color="transparent")
+        
+        if values is None:
+            values = [[None,None],[None,None]]
+            
+        self.master = master # parent widget
+        self.rows = row if row else len(values) # number of default rows
+        self.columns = column if column else len(values[0])# number of default columns
+        self.width = width
+        self.height = height
+        self.padx = padx # internal padding between the rows/columns
+        self.pady = pady
+        self.command = command
+        self.values = values # the default values of the table
+        self.colors = colors # colors of the table if required
+        self.header_color = header_color # specify the topmost row color
+        self.phase = color_phase
+        self.corner = corner_radius
+        self.write = write
+        self.justify = justify
+        self.binded_objects = []
+            
+        if self.write:
+            border_width = border_width=+1
+            
+        if hover_color is not None and hover is False:
+            hover=True
+            
+        self.anchor = anchor
+        self.wraplength = wraplength
+        self.hover = hover 
+        self.border_width = border_width
+        self.hover_color = customtkinter.ThemeManager.theme["CTkButton"]["hover_color"] if hover_color is None else hover_color
+        self.orient = orientation
+        self.border_color = customtkinter.ThemeManager.theme["CTkButton"]["border_color"] if border_color is None else border_color
+        self.inside_frame = customtkinter.CTkFrame(self, border_width=0, fg_color="transparent")
+        super().configure(border_color=self.border_color, border_width=self.border_width, corner_radius=self.corner)
+        self.inside_frame.pack(expand=True, fill="both", padx=self.border_width, pady=self.border_width)
 
+        self.text_color = customtkinter.ThemeManager.theme["CTkLabel"]["text_color"] if text_color is None else text_color
+        self.font = font
+        # if colors are None then use the default frame colors:
+        self.data = {}
+        self.fg_color = customtkinter.ThemeManager.theme["CTkFrame"]["fg_color"] if not self.colors[0] else self.colors[0]
+        self.fg_color2 = customtkinter.ThemeManager.theme["CTkFrame"]["top_fg_color"] if not self.colors[1] else self.colors[1]
+
+        if self.colors[0] is None and self.colors[1] is None:
+            if self.fg_color==self.master.cget("fg_color"):
+                self.fg_color = customtkinter.ThemeManager.theme["CTk"]["fg_color"]
+            if self.fg_color2==self.master.cget("fg_color"):
+                self.fg_color2 = customtkinter.ThemeManager.theme["CTk"]["fg_color"]
+            
+        self.frame = {}
+        self.corner_buttons = {}
+        self.draw_table(**kwargs)
+        
+    def draw_table(self, **kwargs):
+
+        """ draw the table """
+        for i in range(self.rows):
+            for j in range(self.columns):
+                self.inside_frame.grid_rowconfigure(i, weight=1)
+                self.inside_frame.grid_columnconfigure(j, weight=1)
+                if self.phase=="horizontal":
+                    if i%2==0:
+                        fg = self.fg_color
+                    else:
+                        fg = self.fg_color2
+                else:
+                    if j%2==0:
+                        fg = self.fg_color
+                    else:
+                        fg = self.fg_color2
+                        
+                if self.header_color:
+                    if self.orient=="horizontal":
+                        if i==0:
+                            fg = self.header_color
+                    else:
+                        if j==0:
+                            fg = self.header_color
+
+                corner_radius = self.corner
+                if (self.border_width>=5) and (self.corner>=5):
+                    tr = self.border_color
+                else:
+                    tr = ""
+                if i==0 and j==0:
+                    corners = [tr, fg, fg, fg]
+                    hover_modify = self.hover
+        
+                elif i==self.rows-1 and j==self.columns-1:
+                    corners = [fg ,fg, tr, fg]
+                    hover_modify = self.hover
+        
+                elif i==self.rows-1 and j==0:
+                    corners = [fg ,fg, fg, tr]
+                    hover_modify = self.hover
+       
+                elif i==0 and j==self.columns-1:
+                    corners = [fg, tr, fg, fg]
+                    hover_modify = self.hover
+ 
+                else:
+                    corners = [fg, fg, fg, fg]
+                    corner_radius = 0
+                    hover_modify = False
+            
+                if i==0:
+                    pady = (0, self.pady)
+                else:
+                    pady = self.pady
+                    
+                if j==0:
+                    padx = (0, self.padx)
+                else:
+                    padx = self.padx
+                    
+                if i==self.rows-1:
+                    pady = (self.pady,0)
+                
+                if j==self.columns-1:
+                    padx = (self.padx,0)
+
+                if self.values:
+                    try:
+                        if self.orient=="horizontal":
+                            value = self.values[i][j]
+                        else:
+                            value = self.values[j][i]
+                    except IndexError: value = " "
+                else:
+                    value = " "
+                    
+                if value=="":
+                    value = " "
+                
+                if (i,j) in self.data.keys():
+                    if self.data[i,j]["args"]:
+                        args = self.data[i,j]["args"]
+                    else:
+                        args = copy.deepcopy(kwargs)
+                else:
+                    args = copy.deepcopy(kwargs)
+                
+                
+                self.data[i,j] = {"row": i, "column" : j, "value" : value, "args": args}
+                
+                args = self.data[i,j]["args"]
+                
+                if "text_color" not in args:
+                    args["text_color"] = self.text_color
+                if "height" not in args:
+                    args["height"] = self.height
+                if "width" not in args:
+                    args["width"] = self.width
+                if "fg_color" not in args:
+                    args["fg_color"] = fg
+                if args["fg_color"]!=fg:
+                    args["fg_color"] = fg
+                if "corner_radius" in args:
+                    del args["corner_radius"]
+                if "border_color" in args:
+                    del args["border_color"]
+                if "border_width" in args:
+                    del args["border_width"]
+                if "color_phase" in args:
+                    del args["color_phase"]
+                if "orientation" in args:
+                    del args["orientation"]
+                if "write" in args:
+                    del args["write"]
+       
+                if self.write:
+                    if "anchor" in args:
+                        del args["anchor"] 
+                    if "hover_color" in args:
+                        del args["hover_color"] 
+                    if "hover" in args:
+                        del args["hover"]
+                    if "justify" not in args:
+                        args["justify"] = self.justify
+                    
+                    self.frame[i,j] = customtkinter.CTkEntry(self.inside_frame,
+                                                             font=self.font,
+                                                             corner_radius=0,
+                                                             **args)
+                    if value is None:
+                        value = " "
+                    self.frame[i,j].insert(0, str(value))
+                    self.frame[i,j].bind("<Key>", lambda e, row=i, column=j, data=self.data: self.after(100, lambda: self.manipulate_data(row, column)))
+                    self.frame[i,j].grid(column=j, row=i, padx=padx, pady=pady, sticky="nsew")
+                    
+                    if self.header_color:
+                        if i==0:
+                            self.frame[i,j].configure(state="readonly")
+    
+                else:
+                    if "anchor" not in args:
+                        args["anchor"] = self.anchor
+                    if "hover_color" not in args:
+                        args["hover_color"] = self.hover_color
+                    if "hover" not in args:
+                        args["hover"] = self.hover
+                    if "justify" in args:
+                        anchor =  args["justify"]
+                        if anchor=="center":
+                            anchor="c"
+                        elif anchor=="left":
+                            anchor="w"
+                        elif anchor=="right":
+                            anchor="e"
+                        args.update({"anchor": anchor})
+                        del args["justify"]
+                    if value is None:
+                        value = " "
+                    self.frame[i,j] = customtkinter.CTkButton(self.inside_frame, background_corner_colors=corners,
+                                                              font=self.font, 
+                                                              corner_radius=corner_radius,
+                                                              text=value,
+                                                              border_width=0,
+                                                              command=(lambda e=self.data[i,j]: self.command(e)) if self.command else None, **args)
+                    self.frame[i,j].grid(column=j, row=i, padx=padx, pady=pady, sticky="nsew")
+                    if self.frame[i,j]._text_label is not None:
+                        self.frame[i,j]._text_label.config(wraplength=self.wraplength)
+                    
+                    if hover_modify:
+                        self.dynamic_hover(self.frame[i,j], i, j)
+                        
+                self.rowconfigure(i, weight=1)
+                self.columnconfigure(j, weight=1)
+        for x in self.frame:
+            for y in self.binded_objects:
+                self.frame[x].bind(*y)
+        
+    def dynamic_hover(self, frame, i, j):
+        """ internal function to change corner cell colors """
+        self.corner_buttons[i,j] = frame
+        fg = self.data[i,j]["args"]["fg_color"]
+        hv = self.data[i,j]["args"]["hover_color"]
+        if (self.border_width>=5) and (self.corner>=5):
+            tr = self.border_color
+        else:
+            tr = ""
+        if i==0 and j==0:
+            corners = [tr, fg, fg, fg]
+            hover_corners = [tr, hv, hv, hv]
+        elif i==self.rows-1 and j==self.columns-1:
+            corners = [fg ,fg, tr, fg]
+            hover_corners = [hv, hv, tr, hv]
+        elif i==self.rows-1 and j==0:
+            corners = [fg ,fg, fg, tr]
+            hover_corners = [hv, hv, hv, tr]
+        elif i==0 and j==self.columns-1:
+            corners = [fg, tr, fg, fg]
+            hover_corners = [hv, tr, hv, hv]
+        else:
+            return
+        
+        frame.configure(background_corner_colors=corners, fg_color=fg)
+        frame.bind("<Enter>", lambda e, x=i, y=j, color=hover_corners, fg=hv:
+                             self.frame[x,y].configure(background_corner_colors=color, fg_color=fg))
+        frame.bind("<Leave>", lambda e, x=i, y=j, color=corners, fg=fg:
+                            self.frame[x,y].configure(background_corner_colors=color, fg_color=fg))
+        
+    def manipulate_data(self, row, column):
+        """ entry callback """
+        self.update_data()
+        data = self.data[row,column]
+        if self.command: self.command(data)
+        
+    def update_data(self):
+        """ update the data when values are changes """
+        for i in self.frame:
+            if self.write:
+                self.data[i]["value"]=self.frame[i].get()
+            else:
+                self.data[i]["value"]=self.frame[i].cget("text")
+
+        self.values = []
+        for i in range(self.rows):
+            row_data = []
+            for j in range(self.columns):
+                row_data.append(self.data[i,j]["value"])
+            self.values.append(row_data)
+            
+    def edit_row(self, row, value=None, **kwargs):
+        """ edit all parameters of a single row """
+        for i in range(self.columns):
+            self.frame[row, i].configure(require_redraw=True, **kwargs)
+            self.data[row, i]["args"].update(kwargs)
+            if value is not None:
+                self.insert(row, i, value)
+            if (row,i) in self.corner_buttons.keys():
+                self.dynamic_hover(self.corner_buttons[row,i],row,i)
+        self.update_data()
+       
+    def edit_column(self, column, value=None, **kwargs):
+        """ edit all parameters of a single column """
+        for i in range(self.rows):
+            self.frame[i, column].configure(require_redraw=True, **kwargs)
+            self.data[i, column]["args"].update(kwargs)
+            if value is not None:
+                self.insert(i, column, value)
+            if (i, column) in self.corner_buttons.keys():
+                self.dynamic_hover(self.corner_buttons[i, column], i, column)
+        self.update_data()
+        
+    def update_values(self, values, **kwargs):
+        """ update all values at once """
+        for i in self.frame.values():
+            i.destroy()
+        self.frame = {}
+        self.values = values
+        self.draw_table(**kwargs)
+        self.update_data()
+        
+    def add_row(self, values, index=None, **kwargs):
+        """ add a new row """
+        for i in self.frame.values():
+            i.destroy()
+        self.frame = {}
+        if index is None:
+            index = len(self.values)      
+        try:
+            self.values.insert(index, values)
+            self.rows+=1
+        except IndexError: pass
+ 
+        self.draw_table(**kwargs)
+        self.update_data()
+        
+    def add_column(self, values, index=None, **kwargs):
+        """ add a new column """
+        for i in self.frame.values():
+            i.destroy()
+        self.frame = {}
+        if index is None:
+            index = len(self.values[0])
+        x = 0
+        for i in self.values:
+            try:
+                i.insert(index, values[x])
+                x+=1
+            except IndexError: pass
+        self.columns+=1
+        self.draw_table(**kwargs)
+        self.update_data()
+        
+    def delete_row(self, index=None):
+        """ delete a particular row """
+        if len(self.values)==1:
+            return
+        if index is None or index>=len(self.values):
+            index = len(self.values)-1
+        self.values.pop(index)
+        for i in self.frame.values():
+            i.destroy()
+        self.rows-=1
+        self.frame = {}
+        self.draw_table()
+        self.update_data()
+
+        
+    def delete_column(self, index=None):
+        """ delete a particular column """
+        if len(self.values[0])==1:
+            return
+        if index is None or index>=len(self.values[0]):
+            try:
+                index = len(self.values)-1
+            except IndexError:
+                return
+        for i in self.values:
+            i.pop(index)
+        for i in self.frame.values():
+            i.destroy()
+        self.columns-=1
+        self.frame = {}
+        self.draw_table()
+        self.update_data()
+
+        
+    def delete_rows(self, indices=[]):
+        """ delete a particular row """
+        if len(indices)==0:
+            return
+        self.values = [v for i, v in enumerate(self.values) if i not in indices]
+        for i in indices:
+            for j in range(self.columns):
+                self.data[i, j]["args"] = ""
+        for i in self.frame.values():
+            i.destroy()
+        self.rows -= len(set(indices))
+        self.frame = {}
+        self.draw_table()
+        self.update_data()
+        
+    def delete_columns(self, indices=[]):
+        """ delete a particular column """
+        if len(indices)==0:
+            return
+        x = 0
+        
+        for k in self.values:
+            self.values[x] = [v for i, v in enumerate(k) if i not in indices]
+            x+=1
+        for i in indices:
+            for j in range(self.rows):
+                self.data[j, i]["args"] = ""
+                
+        for i in self.frame.values():
+            i.destroy()
+        self.columns -= len(set(indices))
+        self.frame = {}
+        self.draw_table()
+        self.update_data()
+        
+    def get_row(self, row):
+        """ get values of one row """
+        return self.values[row]
+    
+    def get_column(self, column):
+        """ get values of one column """
+        column_list = []
+        for i in self.values:
+            column_list.append(i[column])
+        return column_list
+
+    def select_row(self, row):
+        """ select an entire row """
+        self.edit_row(row, fg_color=self.hover_color)
+        if self.orient!="horizontal":
+            if self.header_color:
+                self.edit_column(0, fg_color=self.header_color)
+        else:
+            if self.header_color:
+                self.edit_row(0, fg_color=self.header_color)
+        return self.get_row(row)
+    
+    def select_column(self, column):
+        """ select an entire column """
+        self.edit_column(column, fg_color=self.hover_color)
+        if self.orient!="horizontal":
+            if self.header_color:
+                self.edit_column(0, fg_color=self.header_color)
+        else:
+            if self.header_color:
+                self.edit_row(0, fg_color=self.header_color)
+        return self.get_column(column)
+    
+    def deselect_row(self, row):
+        """ deselect an entire row """
+        self.edit_row(row, fg_color=self.fg_color if row%2==0 else self.fg_color2)
+        if self.orient!="horizontal":
+            if self.header_color:
+                self.edit_column(0, fg_color=self.header_color)
+        else:
+            if self.header_color:
+                self.edit_row(0, fg_color=self.header_color)
+                
+    def deselect_column(self, column):
+        """ deselect an entire column """
+        for i in range(self.rows):
+            self.frame[i,column].configure(fg_color=self.fg_color if i%2==0 else self.fg_color2)
+        if self.orient!="horizontal":
+            if self.header_color:
+                self.edit_column(0, fg_color=self.header_color)
+        else:
+            if self.header_color:
+                self.edit_row(0, fg_color=self.header_color)
+
+    def select(self, row, column):
+        """ select any cell """
+        if row == 0 and column == 0:
+            hover_corners = ["", self.hover_color, self.hover_color, self.hover_color]
+        elif row == self.rows - 1 and column == self.columns - 1:
+            hover_corners = [self.hover_color, self.hover_color, "", self.hover_color]
+        elif row == self.rows - 1 and column == 0:
+            hover_corners=[self.hover_color, self.hover_color, self.hover_color, ""]
+        elif row == 0 and column == self.columns - 1:
+            hover_corners = [self.hover_color, "", self.hover_color, self.hover_color]
+        else:
+            hover_corners = [self.hover_color, self.hover_color, self.hover_color, self.hover_color]
+        self.frame[row, column].configure(background_corner_colors=hover_corners, fg_color=self.hover_color)
+
+    def deselect(self, row, column):
+        """ deselect any cell """
+        self.frame[row,column].configure(fg_color=self.fg_color if row%2==0 else self.fg_color2)
+        
+    def insert(self, row, column, value, **kwargs):
+        """ insert value in a specific block [row, column] """
+        if kwargs: self.data[row,column]["args"].update(kwargs)
+        if self.write:
+            self.frame[row,column].delete(0, customtkinter.END)
+            self.frame[row,column].insert(0, value)
+            self.frame[row,column].configure(**kwargs)
+        else:        
+            self.frame[row,column].configure(require_redraw=True, text=value, **kwargs)
+            if (row, column) in self.corner_buttons.keys():
+                self.dynamic_hover(self.corner_buttons[row, column], row, column)
+        
+        self.update_data()
+        
+    def edit(self, row, column, **kwargs):
+        """ change parameters of a cell without changing value """
+        if kwargs: self.data[row,column]["args"].update(kwargs)
+        if self.write:
+            self.frame[row,column].configure(**kwargs)
+        else:        
+            self.frame[row,column].configure(require_redraw=True, **kwargs)
+            if (row, column) in self.corner_buttons.keys():
+                self.dynamic_hover(self.corner_buttons[row, column], row, column)
+        
+        self.update_data()
+        
+    def delete(self, row, column, **kwargs):
+        """ delete a value from a specific block [row, column] """
+        if self.write:
+            self.frame[row,column].delete(0, customtkinter.END)
+            self.frame[row,column].configure(**kwargs)
+        else:     
+            self.frame[row,column].configure(require_redraw=True, text="", **kwargs)
+        if kwargs: self.data[row,column]["args"].update(kwargs)
+        self.update_data()
+        
+    def get(self, row=None, column=None):
+        """ get the required cell """
+        if row is not None and column is not None:
+            return self.data[row,column]["value"]
+        else:
+            return self.values
+        
+    def get_selected_row(self):
+        """ Return the index and data of the selected row """
+        selected_row_index = None
+        for i in range(self.rows):
+            if self.frame[i, 0].cget("fg_color") == self.hover_color:
+                selected_row_index = i
+                break
+        selected_row_data = self.get_row(selected_row_index) if selected_row_index is not None else None
+        return {"row_index": selected_row_index, "values": selected_row_data}
+    
+    def get_selected_column(self):
+        """ Return the index and data of the selected row """
+        selected_column_index = None
+        for i in range(self.columns):
+            if self.frame[0, i].cget("fg_color") == self.hover_color:
+                selected_column_index = i
+                break
+        selected_column_data = self.get_column(selected_column_index) if selected_column_index is not None else None
+        return {"column_index": selected_column_index, "values": selected_column_data}
+    
+    def configure(self, **kwargs):
+        """ configure table widget attributes"""
+        
+        if "colors" in kwargs:
+            self.colors = kwargs.pop("colors")
+            self.fg_color = self.colors[0]
+            self.fg_color2 = self.colors[1]
+        if "fg_color" in kwargs:
+            self.colors = (kwargs["fg_color"], kwargs.pop("fg_color"))
+            self.fg_color = self.colors[0]
+            self.fg_color2 = self.colors[1]
+        if "bg_color" in kwargs:
+            super().configure(bg_color=kwargs["bg_color"])
+            self.inside_frame.configure(fg_color=kwargs["bg_color"])
+        if "header_color" in kwargs:
+            self.header_color = kwargs.pop("header_color")
+        if "rows" in kwargs:
+            self.rows = kwargs.pop("rows")
+        if "columns" in kwargs:
+            self.columns = kwargs.pop("columns")
+        if "values" in kwargs:
+            self.values = kwargs.pop("values")
+        if "padx" in kwargs:
+            self.padx = kwargs.pop("padx")
+        if "pady" in kwargs:
+            self.pady = kwargs.pop("pady")
+        if "wraplength" in kwargs:
+            self.wraplength = kwargs.pop("wraplength")
+
+        for i in range(self.rows):
+            for j in range(self.columns):
+                self.data[i,j]["args"].update(kwargs)
+                
+        if "hover_color" in kwargs:
+            self.hover_color = kwargs.pop("hover_color")
+        if "text_color" in kwargs:
+            self.text_color = kwargs.pop("text_color")
+        if "border_width" in kwargs:
+            self.border_width = kwargs.pop("border_width")
+            super().configure(border_width=self.border_width)
+            self.inside_frame.pack(expand=True, fill="both", padx=self.border_width, pady=self.border_width)
+        if "border_color" in kwargs:
+            self.border_color = kwargs.pop("border_color")
+            super().configure(border_color=self.border_color)
+        if "hover" in kwargs:
+            self.hover = kwargs.pop("hover")
+        if "anchor" in kwargs:
+            self.anchor = kwargs.pop("anchor")
+        if "corner_radius" in kwargs:
+            self.corner = kwargs.pop("corner_radius")
+            super().configure(corner_radius=self.corner)
+        if "color_phase" in kwargs:
+            self.phase = kwargs.pop("color_phase")
+        if "justify" in kwargs:
+            self.justify = kwargs.pop("justify")
+        if "orientation" in kwargs:
+            self.orient = kwargs.pop("orientation")
+        if "write" in kwargs:
+            self.write = kwargs.pop("write")
+        if "width" in kwargs:
+            self.width = kwargs.pop("width")
+        if "height" in kwargs:
+            self.height = kwargs.pop("height")
+            
+        self.update_values(self.values, **kwargs)
+
+    def cget(self, param):
+        if param=="width":
+            return self.frame[0,0].winfo_reqwidth()
+        if param=="height":
+            return self.frame[0,0].winfo_reqheight()
+        if param=="colors":
+            return (self.fg_color, self.fg_color2)
+        if param=="hover_color":
+            return self.hover_color
+        if param=="text_color":
+            return self.text_color
+        if param=="border_width":
+            return self.border_width
+        if param=="border_color":
+            return self.border_color
+        if param=="hover":
+            return self.hover
+        if param=="anchor":
+            return self.anchor
+        if param=="wraplength":
+            return self.wraplength
+        if param=="padx":
+            return self.padx
+        if param=="pady":
+            return self.pady
+        if param=="header_color":
+            return self.header_color
+        if param=="row":
+            return self.rows
+        if param=="column":
+            return self.columns
+        if param=="values":
+            return self.values
+        if param=="color_phase":
+            return self.phase
+        if param=="justify":
+            return self.justify
+        if param=="orientation":
+            return self.orient
+        if param=="write":
+            return self.write
+        
+        return super().cget(param)
+    
+    def bind(self, sequence: str = None, command = None, add = True):
+        """ bind all cells """
+        self.binded_objects.append([sequence, command, add])
+        
+        super().bind(sequence, command, add)
+        for i in self.frame:
+            self.frame[i].bind(sequence, command, add)
+        self.inside_frame.bind(sequence, command, add)
+        
+    def unbind(self, sequence: str = None, funcid: str = None):
+        for i in self.binded_objects:
+            if sequence in i:
+                self.binded_objects.remove(i)
+                
+        super().unbind(sequence, funcid)
+        for i in self.frame:
+            self.frame[i].unbind(sequence, funcid)
+        self.inside_frame.unbind(sequence, funcid)
 
 # agent select frame and options
 agent_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_radius=20)
-agent_frame.pack(padx=20, pady=20)
-agent_frame.place(relx=0.51, rely =0.45)
 comboboxAgents = customtkinter.CTkComboBox(master=agent_frame, values=list(agents.keys()), state="readonly")
 comboboxAgents.set(value=selectedAgent)
 comboboxAgents.place(relx=0.5, rely=0.48, anchor= customtkinter.CENTER)
@@ -689,129 +1429,377 @@ buttonAgentText.place(relx=0.5, rely=0.25, anchor= customtkinter.CENTER)
 #start frame and options
 
 start_frame = customtkinter.CTkFrame(master=app,width=777 ,height=120, corner_radius=20)
-start_frame.pack(padx=20, pady=20)
-start_frame.place(relx=0.08, rely =0.7)
 buttonStart = customtkinter.CTkButton(master=start_frame, text="Start", state="disabled")
 buttonStart.place(relx=0.5, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartDodge = customtkinter.CTkButton(master=start_frame, text="Dodge", state="disabled", width= 85)
 buttonStartDodge.place(relx=0.35, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartCheck = customtkinter.CTkButton(master=start_frame, text="Check Side", state="disabled", width= 85)
 buttonStartCheck.place(relx=0.65, rely=0.4, anchor= customtkinter.CENTER)
-buttonStartNames = customtkinter.CTkButton(master=start_frame, text="Get Hidden Names", state="disabled", width= 85)
-buttonStartNames.place(relx=0.88, rely=0.4, anchor= customtkinter.CENTER)
+buttonStartRegion = customtkinter.CTkButton(master=start_frame, text=f"Change Region {findKeysByValue(regions, region)[0]}", command= showRegionSelect)
+buttonStartRegion.place(relx=0.88, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartText = customtkinter.CTkLabel(master=start_frame, text="Pick your Agent or Action and Start :)", text_color=white_text)
 buttonStartText.place(relx=0.5, rely=0.7, anchor= customtkinter.CENTER)
 
+def capitalize_first_letter(string: str) -> str:
+    lowercased_string = string.lower()
+    capitalized_string = lowercased_string.capitalize()
+    return capitalized_string
+
+def RankToTier(Rank: int) -> str:
+    ranksReq = requests.get("https://valorant-api.com/v1/competitivetiers")
+    Ep5SeasinID = "03621f52-342b-cf4e-4f86-9350a49c6d04"
+    ranks = {}
+    rank = "Unrated"
+    if ranksReq.status_code == 404:
+        return "Unknown"
+    for t in ranksReq.json()['data']:
+        if t["uuid"] == Ep5SeasinID:
+            ranks = t['tiers']
+    for r in ranks:
+        if r["tier"] == Rank:
+            rank = r ["tierName"]
+    return rank
+        
+
+def getPlayerStats(player, side, fillerName):
+    playerID = player['Subject']
+    playerSide = side
+    ally_result = "Null"
+    if (playerSide == 'Red'):
+        ally_result = 'Attacker'
+    elif (playerSide == 'Blue'):
+        ally_result = 'Defender'
+    playerNameData = client.put(
+        endpoint="/name-service/v2/players", 
+        endpoint_type="pd", 
+        json_data=[playerID]
+    )[0]
+    agent_keys = findKeysByValue(agents, player['CharacterID'])
+    agent = agent_keys[0] if agent_keys else "Undefined"
+    if agent == "Undefined":
+        agent = fillerName
+    seasonID = None
+    seasonContent = client.fetch_content()
+    for seasons in seasonContent['Seasons']:
+        if (seasons["Type"] == "act") and (seasons["IsActive"] == True):
+            seasonID = seasons["ID"]
+    if not seasons:
+        return seasonID
+    gameName = playerNameData['GameName']
+    tagLine = playerNameData['TagLine']
+    data = {
+        "fullPlayerName": f'{gameName}#{tagLine}',
+        "side": ally_result,
+        "agent": agent,
+        "rank": "N/a",
+        "rr": 0,
+        "peakrank": "N/a",
+        "wr": "N/a",
+        "kd": "N/a",
+        "hs": "N/a"
+    }
+    try:
+        playerMMR = client.fetch_mmr(playerID)
+        seasonal_info = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"]
+        peakRank = 0
+        currentRank = 0
+        if not seasonal_info:
+            raise Exception("")
+        for season_id, season_data in seasonal_info.items():
+            wins_by_tier = season_data["WinsByTier"]
+            if wins_by_tier:
+                max_tier = max(int(tier) for tier in wins_by_tier.keys())
+                if max_tier > peakRank:
+                    peakRank = max_tier
+
+        wins_by_tier_highest = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["WinsByTier"]
+        currentRR = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["RankedRating"]
+        wins = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfWinsWithPlacements"]
+        total_games = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfGames"]
+        wr = 0
+        try:
+            wr = int(wins / total_games * 100)
+        except ZeroDivisionError:
+            wr = 100
+        data["wr"] = wr
+        if wins_by_tier_highest:
+            max_tier = max(int(tier) for tier in wins_by_tier_highest.keys())
+            if max_tier > currentRank:
+                currentRank = max_tier
+        data["rank"] = capitalize_first_letter(RankToTier(currentRank))
+        data["rr"] = currentRR
+        data["peakrank"] = capitalize_first_letter(RankToTier(peakRank))
+    except Exception as e:
+        print(f"Error: {e} With Player: {gameName}")
+    try:
+        lastComp = client.fetch(endpoint= f"/mmr/v1/players/{playerID}/competitiveupdates?startIndex=0&endIndex=1&queue=competitive", endpoint_type="pd")
+        lastCompData = client.fetch_match_details(lastComp['Matches'][0]['MatchID'])
+        total_hits = 0
+        total_headshots = 0
+        for Round in lastCompData["roundResults"]:
+            for currentPlayer in Round["playerStats"]:
+                if currentPlayer["subject"] == playerID:
+                    for hits in currentPlayer["damage"]:
+                        total_hits += hits["legshots"]
+                        total_hits += hits["bodyshots"]
+                        total_hits += hits["headshots"]
+                        total_headshots += hits["headshots"]
+        data['hs'] = round((total_headshots/total_hits)*100, 1)
+        for targetPlayer in lastCompData["players"]:
+            if targetPlayer["subject"] == playerID:
+                kills = targetPlayer["stats"]["kills"]
+                deaths = targetPlayer["stats"]["deaths"]
+
+        if deaths == 0:
+            data['kd'] = kills
+        elif kills == 0:
+            data['kd'] = 0
+        else:
+            data['kd'] = round(kills/deaths, 2)
+        return data
+    except Exception as e:
+        print(f"Error: {e} With Player: {gameName}")
+    return data
+    
+    
 
 def stop():
     global running
     running = False
     buttonStart.configure(text="Start", command=startButton)
 
-def start(dodge=False, check=False, names=False):
+def checkSides():
+    sessionState = client.fetch_presence(client.puuid)
+    if not sessionState:
+        showRegionSelect()
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        return
+    else:
+        sessionState = sessionState['sessionLoopState']
+    if sessionState == "PREGAME":
+        buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
+        ally = client.pregame_fetch_match()['AllyTeam']
+        ally_team = ally['TeamID']
+        ally_result = "Null"
+        side_color = "#DCE4EE"
+        if (ally_team == 'Red'):
+            ally_result = 'Attacker'
+            side_color = red_text
+        elif (ally_team == 'Blue'):
+            ally_result = 'Defender'
+            side_color = blue_text
+        buttonStartText.configure(text=f'You\'re: {ally_result}', text_color=side_color)
+        return
+    else:
+        buttonStartText.configure(text='You Must Be In Agent Select First', text_color=red_text)
+def dodgeMatch():
+    sessionState = client.fetch_presence(client.puuid)
+    if not sessionState:
+        showRegionSelect()
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        return
+    else:
+        sessionState = sessionState['sessionLoopState']
+    if sessionState == "PREGAME":
+        buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
+        client.pregame_quit_match()
+        buttonStartText.configure(text='Successfully dodged the Match', text_color=white_text)
+        return
+    else:
+        buttonStartText.configure(text='You Must Be In Agent Select First', text_color=red_text)
+def disProButtons():
+    buttonGetNames.configure(state="disabled", width=100)
+    buttonGetNamesWithStats.configure(state="disabled", width=120)
+def enProButtons():
+    buttonGetNames.configure(state="normal", width=100)
+    buttonGetNamesWithStats.configure(state="normal", width=120)
+def getHiddenNames():
+    sessionState = client.fetch_presence(client.puuid)
+    players = []
+    if not sessionState:
+        showRegionSelect()
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        return
+    else:
+        sessionState = sessionState['sessionLoopState']
+    if sessionState == "INGAME":
+        buttonStartText.configure(text='Getting Hidden Names', text_color=white_text)
+        matchId = client.coregame_fetch_player()['MatchID']
+        currentMatch = client.coregame_fetch_match(matchId)
+        for player in currentMatch['Players']:
+            if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
+                continue
+            players.append(player)
+        if not players:
+            buttonStartText.configure(text='No Hidden Names Found', text_color=red_text)
+            return
+    elif sessionState == "PREGAME":
+        buttonStartText.configure(text='Getting Hidden Names', text_color=white_text)
+        currentMatch = client.pregame_fetch_match()
+        for index, player in enumerate(currentMatch['AllyTeam']['Players'], start=1):
+            player['fillerName'] = f"Player{index}"
+            if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
+                continue
+            player['TeamID'] = currentMatch["AllyTeam"]["TeamID"]
+            players.append(player)
+        if not players:
+            buttonStartText.configure(text='No Hidden Names Found', text_color=red_text)
+            return
+    else:
+        buttonStartText.configure(text='Start A Game First !!', text_color=red_text)
+        return
+    buttonStartText.configure(text='Found Hidden Names !!', text_color=white_text)
+    newWindow = customtkinter.CTkToplevel(app)
+    newWindow.geometry("400x390")
+    newWindow.title("FuretaPikku Agent Names")
+    newWindow.resizable(0, 0)
+    newWindow.after(250, lambda: newWindow.iconbitmap(image))
+    newWindow.grab_set()
+    mainFrame = customtkinter.CTkScrollableFrame(newWindow, 300, 300, 20)
+    button = customtkinter.CTkLabel(mainFrame, text="Hidden Names Click To Copy:")
+    button.pack(pady=5, anchor="nw")
+    mainFrame.pack(padx= 20, pady= 10)
+    def kill():
+        newWindow.destroy()
+        newWindow.update()
+    doneButton = customtkinter.CTkButton(newWindow, text="Done", command=kill)
+    doneButton.pack(padx=20,pady=5)
+    for hiddenPlayer in players:
+        ally_team = hiddenPlayer['TeamID']
+        ally_result = "Null"
+        side_color = "#DCE4EE"
+        if (ally_team == 'Red'):
+            ally_result = 'Attacker'
+            side_color = red_text
+        elif (ally_team == 'Blue'):
+            ally_result = 'Defender'
+            side_color = blue_text
+        agent_keys = findKeysByValue(agents, hiddenPlayer['CharacterID'])
+        agent = agent_keys[0] if agent_keys else "Undefined"
+        if (agent == "Undefined") and sessionState == "PREGAME":
+            agent = hiddenPlayer['fillerName']
+        playerId = hiddenPlayer['Subject']
+        playerNameData = client.put(
+            endpoint="/name-service/v2/players", 
+            endpoint_type="pd", 
+            json_data=[playerId]
+        )[0]
+        playerName = playerNameData['GameName']
+        playerTag = f"#{playerNameData['TagLine']}"
+        fullName = f"{playerName}{playerTag}"
+        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: pyperclip.copy(fullName), text_color=side_color)
+        button.pack(pady=5, anchor="nw")
+    return
+def getHiddenNamesWithStatsPro():
+    sessionState = client.fetch_presence(client.puuid)
+    if not sessionState:
+        showRegionSelect()
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        return
+    else:
+        sessionState = sessionState['sessionLoopState']
+        defplayers = []
+        atkplayers = []
+    if sessionState == "INGAME":
+        disProButtons()
+        buttonStartText.configure(text='Getting Hidden Names and Stats...', text_color=white_text)
+        matchId = client.coregame_fetch_player()['MatchID']
+        currentMatch = client.coregame_fetch_match(matchId)
+        for index, player in enumerate(currentMatch['Players'], start=1):
+            playerStats = getPlayerStats(player, player['TeamID'], f"Player{index}")
+            if(playerStats["side"] == "Defender"):
+                defplayers.append(playerStats)
+            if(playerStats["side"] == "Attacker"):
+                atkplayers.append(playerStats)
+        if (not defplayers) and (not atkplayers):
+            enProButtons()
+            buttonStartText.configure(text='No Players Found', text_color=red_text)
+            return
+    elif sessionState == "PREGAME":
+        disProButtons()
+        buttonStartText.configure(text='Getting Hidden Names and Stats...', text_color=white_text)
+        currentMatch = client.pregame_fetch_match()
+        for index, player in enumerate(currentMatch['AllyTeam']['Players'], start=1):
+            playerStats = getPlayerStats(player, currentMatch['AllyTeam']['TeamID'], f"Player{index}")
+            if(playerStats["side"] == "Defender"):
+                defplayers.append(playerStats)
+            if(playerStats["side"] == "Attacker"):
+                atkplayers.append(playerStats)
+        if (not defplayers) and (not atkplayers):
+            enProButtons()
+            buttonStartText.configure(text='No Players Found', text_color=red_text)
+            return
+    else:
+        buttonStartText.configure(text='Start A Game First !!', text_color=red_text)
+        return
+    enProButtons()
+    buttonStartText.configure(text='Found Hidden Names and Stats !!', text_color=white_text)
+    valueOfPlayers = [["Side Agent:", "Name:", "Rank(RR):", "Peak Rank", "WinRate%", "KD%", "HeadShot%"]]
+    if defplayers:
+        for defplayer in defplayers:
+            fullName = defplayer["fullPlayerName"]
+            agent= defplayer["agent"]
+            side = defplayer["side"]
+            rank = defplayer["rank"]
+            rr = defplayer["rr"]
+            peakRank = defplayer["peakrank"]
+            wr = defplayer["wr"]
+            kd = defplayer["kd"]
+            hs = defplayer["hs"]
+            defPlayer = [ f"{side} {agent}", f"{fullName}", f"{rank}({rr})", f"{peakRank}", f"{wr}", f"{kd}", f"{hs}"]
+            valueOfPlayers.append(defPlayer)
+    if atkplayers:
+        for atkplayer in atkplayers:
+            fullName = atkplayer["fullPlayerName"]
+            agent= atkplayer["agent"]
+            side = atkplayer["side"]
+            rank = atkplayer["rank"]
+            rr = atkplayer["rr"]
+            peakRank = atkplayer["peakrank"]
+            wr = atkplayer["wr"]
+            kd = atkplayer["kd"]
+            hs = atkplayer["hs"]
+            atkPlayer = [ f"{side} {agent}", f"{fullName}", f"{rank}({rr})", f"{peakRank}", f"{wr}", f"{kd}", f"{hs}"]
+            valueOfPlayers.append(atkPlayer)
+    newWindow = customtkinter.CTkToplevel(app)
+    newWindow.geometry("1050x415")
+    newWindow.title("FuretaPikku Stats Tab")
+    newWindow.resizable(0, 0)
+    newWindow.after(250, lambda: newWindow.iconbitmap(image))
+    newWindow.grab_set()
+    tree = CTkTable(newWindow, 11, 7, values=valueOfPlayers)
+    tree.pack(expand= False, pady=20)
+    for i in range(1, 11):
+        rowS = tree.get_row(i)
+        if "Defender" in str(rowS[0]):
+            tree.edit_row(i, text_color=blue_text)
+        else:
+            tree.edit_row(i, text_color=red_text)
+    def kill():
+        newWindow.destroy()
+        newWindow.update()
+    doneButton = customtkinter.CTkButton(newWindow, text="Done", command=kill)
+    doneButton.pack(pady=20)
+    playerAgentList = tree.get_column(0)
+    if 'Side Agent:' in playerAgentList:
+        playerAgentList.remove('Side Agent:')
+    
+    scrollUsers = customtkinter.CTkComboBox(newWindow, values=playerAgentList, state="readonly", width=180)
+    scrollUsers.set(playerAgentList[0])
+    scrollUsers.place(relx=0.1, rely=0.884)
+    CTkScrollableDropdown(scrollUsers, values=playerAgentList)
+    def CopyName():
+        treeData = tree.get()
+        for si in treeData:
+            selectedUser = str(scrollUsers.get())
+            if(selectedUser == si[0]):
+                pyperclip.copy(si[1])
+    buttonCopyUserName = customtkinter.CTkButton(newWindow, text="Copy Name", width=85, command=CopyName)
+    buttonCopyUserName.place(relx=0.277, rely=0.884)
+    return
+def start():
     print("Starting...")
     global running
-    if ((dodge == False) and (check == False) and (names==False)):
-        print("running set to True")
-        running = True
-    with open('config.json', 'r') as f:
-        newconfig = json.load(f)
-        agents = newconfig['agents']
-        region = newconfig['region']
-    client = Client(region=region)
-    try:
-        client.activate()
-    except Exception as e:
-        buttonStartText.configure(text="Looks like VALORANT isn't running", text_color=red_text)
-        print(f'{e}')
-        return
-    if (dodge == True) or (check == True) or (names == True):
-        sessionState = client.fetch_presence(client.puuid)['sessionLoopState']
-        if ((sessionState == "PREGAME") or (sessionState == "INGAME")):
-            if sessionState == "PREGAME" and names == False:
-                if (dodge == True):
-                    buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
-                    client.pregame_quit_match()
-                    buttonStartText.configure(text='Successfully dodged the Match', text_color=white_text)
-                    return
-                if (check == True):
-                    buttonStartText.configure(text='Agent Select Screen Found', text_color=white_text)
-                    ally = client.pregame_fetch_match()['AllyTeam']
-                    ally_team = ally['TeamID']
-                    ally_result = "Null"
-                    side_color = "#DCE4EE"
-                    if (ally_team == 'Red'):
-                        ally_result = 'Attacker'
-                        side_color = red_text
-                    elif (ally_team == 'Blue'):
-                        ally_result = 'Defender'
-                        side_color = blue_text
-
-                    buttonStartText.configure(text=f'you are: {ally_result}', text_color=side_color)
-                    return
-            elif sessionState != "PREGAME" and names == False:
-                buttonStartText.configure(text='You Must Be In Agent Select !!', text_color=red_text)
-                return
-            elif sessionState == "INGAME" and names == True:
-                buttonStartText.configure(text='Getting Hidden Names', text_color=white_text)
-                matchId = client.coregame_fetch_player()['MatchID']
-                currentMatch = client.coregame_fetch_match(matchId)
-                players = []
-                for player in currentMatch['Players']:
-                    if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
-                        continue
-                    players.append(player)
-                if not players:
-                    buttonStartText.configure(text='No Hidden Names Found', text_color=red_text)
-                    return
-                else:
-                    buttonStartText.configure(text='Found Hidden Names !!', text_color=white_text)
-                    newWindow = customtkinter.CTkToplevel(app)
-                    newWindow.geometry("400x390")
-                    newWindow.title("FuretaPikku Agent Names")
-                    newWindow.resizable(0, 0)
-                    newWindow.after(250, lambda: newWindow.iconbitmap(image))
-                    newWindow.grab_set()
-                    mainFrame = customtkinter.CTkScrollableFrame(newWindow, 300, 300, 20)
-                    button = customtkinter.CTkLabel(mainFrame, text="Hidden Names Click To Copy:")
-                    button.pack(pady=5, anchor="nw")
-                    mainFrame.pack(padx= 20, pady= 10)
-                    def kill():
-                        newWindow.destroy()
-                        newWindow.update()
-                    doneButton = customtkinter.CTkButton(newWindow, text="Done", command=kill)
-                    doneButton.pack(padx=20,pady=5)
-                    for hiddenPlayer in players:
-                        ally_team = hiddenPlayer['TeamID']
-                        ally_result = "Null"
-                        side_color = "#DCE4EE"
-                        if (ally_team == 'Red'):
-                            ally_result = 'Attacker'
-                            side_color = red_text
-                        elif (ally_team == 'Blue'):
-                            ally_result = 'Defender'
-                            side_color = blue_text
-                        agent_keys = findKeysByValue(agents, hiddenPlayer['CharacterID'])
-                        agent = agent_keys[0] if agent_keys else "Undefined"
-                        playerId = hiddenPlayer['Subject']
-                        playerNameData = client.put(
-                            endpoint="/name-service/v2/players", 
-                            endpoint_type="pd", 
-                            json_data=[playerId]
-                        )[0]
-                        playerName = playerNameData['GameName']
-                        playerTag = f"#{playerNameData['TagLine']}"
-                        fullName = f"{playerName}{playerTag}"
-                        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: pyperclip.copy(fullName), text_color=side_color)
-                        button.pack(pady=5, anchor="nw")
-                return
-            elif sessionState != "INGAME" and names== True:
-                buttonStartText.configure(text='You Must Be Pass The Agent Select !!', text_color=red_text)
-                return
-            return
-        else:
-            buttonStartText.configure(text='Start a Game First !!', text_color=red_text)
-            return
     preferredAgent = str(comboboxAgents.get())
     with open('config.json', 'w') as f:
         config['agent'] = preferredAgent
@@ -821,7 +1809,13 @@ def start(dodge=False, check=False, names=False):
     while running:
         try:
             print("looping")
-            sessionState = client.fetch_presence(client.puuid)['sessionLoopState']
+            sessionState = client.fetch_presence(client.puuid)
+            if not sessionState:
+                showRegionSelect()
+                labelRegionStats.configure(text=startTheGame, text_color=red_text)
+                return
+            else:
+                sessionState = sessionState['sessionLoopState']
             if ((sessionState == "PREGAME") and (client.pregame_fetch_match()['ID'] not in playedMatches) and (preferredAgent in agents.keys())):
                 buttonStartText.configure(text='Agent Select Screen Found', text_color= white_text)
                 client.pregame_select_character(agents[preferredAgent])
@@ -840,24 +1834,40 @@ def start(dodge=False, check=False, names=False):
                 buttonStartText.configure(text=f'you are: {ally_result}\nLocked {preferredAgent}', text_color=side_color) 
             time.sleep(1)
         except Exception as e:
-            print('', end='')
+            running = False
+            showRegionSelect()
+            labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        print(f'{e}')
+            
 
 def startButton():
-    print("targeting Thread function")
+    print("targeting Thread function start")
     selThread = threading.Thread(target=start)
-    print("Starting thread process")
+    print("Starting thread process for select")
+    selThread.start()
+def getHiddenNamesWithStats():
+    print("targeting Thread function names")
+    selThread = threading.Thread(target=getHiddenNamesWithStatsPro)
+    print("Starting thread process for getting hidden names")
     selThread.start()
 
 if ranBefore != True:
-    comboboxRegion.set(value= findKeysByValue(regions, region)[0])
-    comboboxAgents.configure(state="disabled")
-    buttonStartText.configure(text="Please Select Your Region First", text_color=white_text)
+    showRegionSelect()
 elif ranBefore == True:
-    comboboxRegion.set(value= findKeysByValue(regions, region)[0])
-    comboboxRegion.configure(state="disabled")
-    buttonRegion.configure(text="Change", command= changeRegion)
-    buttonStart.configure(state="normal", command= startButton)
-    buttonStartDodge.configure(state="normal", command=lambda: start(dodge= True, check= False, names=False))
-    buttonStartCheck.configure(state="normal", command=lambda: start(dodge= False, check= True, names=False))
-    buttonStartNames.configure(state="normal", command=lambda: start(dodge=False, check=False, names=True))
+    client = Client(region=region)
+    try:
+        client.activate()
+        showSelected()
+    except Exception as e:
+        showRegionSelect()
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        print(f'{e}')
+
+buttonStart.configure(state="normal", command= startButton)
+buttonStartDodge.configure(state="normal", command=dodgeMatch)
+buttonStartCheck.configure(state="normal", command=checkSides)
+buttonGetNames.configure(state="normal", command=getHiddenNames)
+buttonGetNamesWithStats.configure(state="normal", command=getHiddenNamesWithStats)
+
+
 app.mainloop()
