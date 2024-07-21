@@ -1513,6 +1513,7 @@ def getPlayerStats(player, side, fillerName):
                     peakRank = max_tier
 
         wins_by_tier_highest = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["WinsByTier"]
+        currentRank = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["Rank"]
         currentRR = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["RankedRating"]
         wins = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfWinsWithPlacements"]
         total_games = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfGames"]
@@ -1522,10 +1523,6 @@ def getPlayerStats(player, side, fillerName):
         except ZeroDivisionError:
             wr = 100
         data["wr"] = wr
-        if wins_by_tier_highest:
-            max_tier = max(int(tier) for tier in wins_by_tier_highest.keys())
-            if max_tier > currentRank:
-                currentRank = max_tier
         data["rank"] = capitalize_first_letter(RankToTier(currentRank))
         data["rr"] = currentRR
         data["peakrank"] = capitalize_first_letter(RankToTier(peakRank))
