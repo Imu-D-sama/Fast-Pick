@@ -1513,7 +1513,7 @@ def getPlayerStats(player, side, fillerName):
                     peakRank = max_tier
 
         wins_by_tier_highest = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["WinsByTier"]
-        currentRank = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["Rank"]
+        currentRank = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["CompetitiveTier"]
         currentRR = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["RankedRating"]
         wins = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfWinsWithPlacements"]
         total_games = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfGames"]
