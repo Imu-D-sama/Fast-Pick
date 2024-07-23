@@ -1797,6 +1797,7 @@ def getHiddenNamesWithStatsPro():
 def start():
     print("Starting...")
     global running
+    running = True
     preferredAgent = str(comboboxAgents.get())
     with open('config.json', 'w') as f:
         config['agent'] = preferredAgent
