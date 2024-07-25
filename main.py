@@ -1835,7 +1835,7 @@ def start():
             running = False
             showRegionSelect()
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
-        print(f'{e}')
+            print(f'{e}')
             
 
 def startButton():
