@@ -10,6 +10,7 @@ import sys
 import time
 import base64
 import pyperclip
+import pystray
 import copy
 from valclient.client import Client
 from PIL import Image
@@ -254,6 +255,7 @@ def download_image_to_tempfile(base64img):
     image.save(temp_file.name)
     return temp_file.name
 image = download_image_to_tempfile(logo_in_base64)
+openImg = Image.open(image)
 
 agents = {}
 playedMatches = []
@@ -280,6 +282,26 @@ app.title("FuretaPikku")
 app.geometry("900x600")
 app.resizable(False, False)
 app.iconbitmap(image)
+
+#Tray Icon OPTIONS
+def QuitButton():
+    app.destroy()
+
+def on_tray_icon_clicked():
+    app.deiconify()
+    app.lift()
+    app.focus_force()
+
+def TrayIconT():
+    TrayMenu = pystray.Menu(
+        pystray.MenuItem("Quit", QuitButton)
+    )
+    trayIcon = pystray.Icon("FuretaPikku", Image.open(image), menu=TrayMenu)
+    trayIcon._update_menu_item = lambda *args, **kwargs: None  # Prevent menu update issues
+    trayIcon.icon = Image.open(image)
+    trayIcon.menu = TrayMenu
+    trayIcon.run_detached()
+    trayIcon.update_menu = lambda self=trayIcon: on_tray_icon_clicked()
 
 # Top image
 img = customtkinter.CTkImage(light_image=Image.open(image), dark_image=Image.open(image), size=(170,170))
@@ -1867,5 +1889,6 @@ buttonStartCheck.configure(state="normal", command=checkSides)
 buttonGetNames.configure(state="normal", command=getHiddenNames)
 buttonGetNamesWithStats.configure(state="normal", command=getHiddenNamesWithStats)
 
-
+trayThread = threading.Thread(target=TrayIconT, daemon=True)
+trayThread.start()
 app.mainloop()
