@@ -2,4 +2,3 @@ customtkinter
 requests
 valclient
 Pillow
-pystray
