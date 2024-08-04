@@ -10,7 +10,7 @@ import sys
 import time
 import base64
 import pyperclip
-import pystray
+import webbrowser
 import copy
 from valclient.client import Client
 from PIL import Image
@@ -281,6 +281,7 @@ app.title("FuretaPikku")
 app.geometry("900x600")
 app.resizable(False, False)
 app.iconbitmap(image)
+debug = True
 
 # Top image
 img = customtkinter.CTkImage(light_image=Image.open(image), dark_image=Image.open(image), size=(170,170))
@@ -351,6 +352,9 @@ labelRegionStats.place(relx=0.507,rely=0.69, anchor= customtkinter.CENTER)
 util_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_radius=20)
 buttonGetNames = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names", state="disabled", width= 85)
 buttonGetNames.place(relx=0.5, rely=0.69, anchor= customtkinter.CENTER)
+boolVar = customtkinter.BooleanVar(value=False)
+buttonGetNamesSwitch = customtkinter.CTkSwitch(master=util_frame, text="Tracker Mode", state="normal", variable=boolVar, onvalue=True, offvalue=False)
+buttonGetNamesSwitch.place(relx=0.8, rely=0.69, anchor= customtkinter.CENTER)
 buttonGetNamesWithStats = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names With Stats", state="disabled", width= 85)
 buttonGetNamesWithStats.place(relx=0.5, rely=0.36, anchor= customtkinter.CENTER)
 '''
@@ -1620,13 +1624,15 @@ def getHiddenNames():
         return
     else:
         sessionState = sessionState['sessionLoopState']
+        trackerMode = buttonGetNamesSwitch.get()
     if sessionState == "INGAME":
         buttonStartText.configure(text='Getting Hidden Names', text_color=white_text)
         matchId = client.coregame_fetch_player()['MatchID']
         currentMatch = client.coregame_fetch_match(matchId)
         for player in currentMatch['Players']:
-            if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
-                continue
+            if trackerMode == False:
+                if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
+                    continue
             players.append(player)
         if not players:
             buttonStartText.configure(text='No Hidden Names Found', text_color=red_text)
@@ -1636,8 +1642,9 @@ def getHiddenNames():
         currentMatch = client.pregame_fetch_match()
         for index, player in enumerate(currentMatch['AllyTeam']['Players'], start=1):
             player['fillerName'] = f"Player{index}"
-            if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
-                continue
+            if trackerMode == False:
+                if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
+                    continue
             player['TeamID'] = currentMatch["AllyTeam"]["TeamID"]
             players.append(player)
         if not players:
@@ -1656,6 +1663,8 @@ def getHiddenNames():
     mainFrame = customtkinter.CTkScrollableFrame(newWindow, 300, 300, 20)
     button = customtkinter.CTkLabel(mainFrame, text="Hidden Names Click To Copy:")
     button.pack(pady=5, anchor="nw")
+    if trackerMode == True:
+        button.configure(text="Click To Open Tracker Page:")
     mainFrame.pack(padx= 20, pady= 10)
     def kill():
         newWindow.destroy()
@@ -1685,7 +1694,13 @@ def getHiddenNames():
         playerName = playerNameData['GameName']
         playerTag = f"#{playerNameData['TagLine']}"
         fullName = f"{playerName}{playerTag}"
-        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: pyperclip.copy(fullName), text_color=side_color)
+        def decideCopy(fullName: str):
+            if trackerMode == True:
+                fullName = fullName.replace("#", "%23")
+                webbrowser.open(f"https://tracker.gg/valorant/profile/riot/{fullName}/overview")
+            else:
+                pyperclip.copy(f"{fullName}")
+        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: decideCopy(fullName), text_color=side_color)
         button.pack(pady=5, anchor="nw")
     return
 def getHiddenNamesWithStatsPro():
@@ -1858,9 +1873,12 @@ elif ranBefore == True:
         client.activate()
         showSelected()
     except Exception as e:
-        showRegionSelect()
-        labelRegionStats.configure(text=startTheGame, text_color=red_text)
-        print(f'{e}')
+        if debug == False:
+            showRegionSelect()
+            labelRegionStats.configure(text=startTheGame, text_color=red_text)
+            print(f'{e}')
+        else:
+            showSelected()
 
 buttonStart.configure(state="normal", command= startButton)
 buttonStartDodge.configure(state="normal", command=dodgeMatch)
