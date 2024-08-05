@@ -1917,8 +1917,12 @@ def start():
 
     buttonStart.configure(text="Stop", command=stop)
     buttonStartText.configure(text="Waiting For a Match to Begin...", text_color=white_text)
+    timesLooped = 0
     while running:
         try:
+            if timesLooped > 0:
+                time.sleep(1.5)
+            timesLooped += 1
             print("looping")
             sessionState = client.fetch_presence(client.puuid)
             if not sessionState:
@@ -1927,7 +1931,8 @@ def start():
                 return
             else:
                 sessionState = sessionState['sessionLoopState']
-            if ((sessionState == "PREGAME")):
+            print(sessionState)
+            if sessionState == "PREGAME":
                 match = client.pregame_fetch_match()
                 if (match['ID'] not in playedMatches):
                     mapId = match['MapID']
@@ -1954,12 +1959,14 @@ def start():
                         ally_result = 'Defender'
                         side_color = blue_text
                     buttonStartText.configure(text=f'you are: {ally_result}\nLocked {preferredAgent}', text_color=side_color) 
-            time.sleep(1.5)
         except Exception as e:
+            if "You are not in a pre-game" in str(e):
+                print("YOU ARE NOT IN PREGAME")
+                continue
             running = False
             showRegionSelect()
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
-            print(e)
+            print(f"Error in Start: {e}")
             
 
 def startButton():
