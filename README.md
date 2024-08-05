@@ -1,8 +1,8 @@
 # FuretaPikku
 
-A Simple App to Get Players Stats, Lock Agents, Dodge a Match, Check Sides in the Select Screen, and Get Hidden Player Names, With A Very Simple GUI
+A Simple App to Get Players Stats, Lock Agents(You Can Select an Agent For Each Map), Dodge a Match, Check Sides in the Select Screen, and Get Hidden Player Names, With A Very Simple GUI
 
-![app](https://i.imgur.com/7B0A7lx.png)
+![app](https://i.imgur.com/zHBeHMs.png)
 
 # Stats Tab
 
@@ -23,7 +23,7 @@ A Simple App to Get Players Stats, Lock Agents, Dodge a Match, Check Sides in th
 
 ### Instalocking
 
-1. Select Your Agent
+1. Select Your Agent(You Can Choose To Select By Map)
 2. Press Start In The App
 3. Start a Match
 4. Your agent is locked Don't Forget To Press Stop :)

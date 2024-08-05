@@ -21,6 +21,7 @@ from io import BytesIO
 def checkFiles():
     defaultConfig = {
         "agents": {
+                "None": "00000",
                 "Jett": "add6443a-41bd-e414-f6ad-e58d267f4e95",
                 "Reyna": "a3bfb853-43b2-7238-a4f1-ad90e9e46bcc",
                 "Raze": "f94c3b30-42be-e959-889c-5aa313dba261",
@@ -36,7 +37,7 @@ def checkFiles():
                 "Sage": "569fdd95-4d10-43ab-ca70-79becc718b46",
                 "Chamber": "22697a3d-45bf-8dd7-4fec-84a9e28c69d7",
                 "Omen": "8e253930-4c05-31dd-1b6c-968525494517",
-                "Brazil": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
+                "Brimstone": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
                 "Astra": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
                 "Viper": "707eab51-4836-f488-046a-cda6bf494859",
                 "Fade": "dade69B4-4f5a-8528-247b-219e5a1facd6",
@@ -55,10 +56,24 @@ def checkFiles():
             "Korea": "kr"
         },
         "region": "eu",
-        "agent": "Reyna",
-        "ran": False
+        "agent": "None",
+        "ran": False,
+        "mapMode": "Normal",
+        "mapAgentSelect": {
+            "Ascent": "None",
+            "Split": "None",
+            "Fracture": "None",
+            "Bind": "None",
+            "Breeze": "None",
+            "Abyss": "None",
+            "Lotus": "None",
+            "Sunset": "None",
+            "Pearl": "None",
+            "Icebox": "None",
+            "Haven": "None"
+        }
     }
-    # Check file existance and missing agents and update them
+    # Check file existance and missing agents and maps and update them
     if os.path.exists('config.json'):
         with open('config.json', 'r') as file:
             currentConfig = json.load(file)
@@ -66,6 +81,16 @@ def checkFiles():
         for agent, id in defaultConfig["agents"].items():
             if agent not in currentConfig["agents"]:
                 currentConfig["agents"][agent] = id
+        
+        if 'mapAgentSelect' not in currentConfig:
+            currentConfig['mapAgentSelect'] = defaultConfig["mapAgentSelect"]
+        
+        if 'mapMode' not in currentConfig:
+            currentConfig['mapMode'] = defaultConfig["mapMode"]
+            
+        for map, mapId in defaultConfig["mapAgentSelect"].items():
+            if map not in currentConfig["mapAgentSelect"]:
+                currentConfig["mapAgentSelect"][map] = mapId
 
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
@@ -270,6 +295,8 @@ with open('config.json', 'r') as f:
     region = config['region']
     regions = config['regions']
     selectedAgent = config['agent']
+    currentMode = config['mapMode']
+    existingMaps = config['mapAgentSelect']
 
 # app colors
 customtkinter.set_appearance_mode("system")
@@ -281,7 +308,6 @@ app.title("FuretaPikku")
 app.geometry("900x600")
 app.resizable(False, False)
 app.iconbitmap(image)
-debug = True
 
 # Top image
 img = customtkinter.CTkImage(light_image=Image.open(image), dark_image=Image.open(image), size=(170,170))
@@ -297,7 +323,7 @@ def showSelected():
     util_frame.place(relx=0.015, rely =0.45)
     
     agent_frame.pack(padx=20, pady=20)
-    agent_frame.place(relx=0.51, rely =0.45)
+    agent_frame.place(relx=0.51, rely =0.42)
     
     start_frame.pack(padx=20, pady=20)
     start_frame.place(relx=0.08, rely =0.7)
@@ -1423,13 +1449,23 @@ class CTkTable(customtkinter.CTkFrame):
         self.inside_frame.unbind(sequence, funcid)
 
 # agent select frame and options
-agent_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_radius=20)
-comboboxAgents = customtkinter.CTkComboBox(master=agent_frame, values=list(agents.keys()), state="readonly")
+def switchSelectingMode():
+    newMode = agent_frame.get()
+    config['mapMode'] = newMode
+    with open('config.json', 'w') as file:
+        json.dump(config, file, indent=4)
+agent_frame = customtkinter.CTkTabview(master=app,width=435 ,height=140, corner_radius=20, command=switchSelectingMode)
+normal = agent_frame.add("Normal")
+Map = agent_frame.add("Map")
+agent_frame.set(currentMode)
+comboboxAgents = customtkinter.CTkComboBox(master=normal, values=list(agents.keys()), state="readonly")
 comboboxAgents.set(value=selectedAgent)
-comboboxAgents.place(relx=0.5, rely=0.48, anchor= customtkinter.CENTER)
+comboboxAgents.place(relx=0.5, rely=0.56, anchor= customtkinter.CENTER)
+buttonAgentsMap = customtkinter.CTkButton(master=Map, text="Select Agent For Each Map")
+buttonAgentsMap.place(relx=0.5, rely=0.4, anchor= customtkinter.CENTER)
 sct = CTkScrollableDropdown(comboboxAgents, values=list(agents.keys()), autocomplete= False)
-buttonAgentText = customtkinter.CTkLabel(master=agent_frame, text="Select Your Agent To Start Locking in First:")
-buttonAgentText.place(relx=0.5, rely=0.25, anchor= customtkinter.CENTER)
+buttonAgentText = customtkinter.CTkLabel(master=normal, text="Select Your Agent To Start Locking in First:")
+buttonAgentText.place(relx=0.5, rely=0.1, anchor= customtkinter.CENTER)
 
 #start frame and options
 
@@ -1464,7 +1500,54 @@ def RankToTier(Rank: int) -> str:
         if r["tier"] == Rank:
             rank = r ["tierName"]
     return rank
-        
+
+def MapIdToMapName(MapId: str) -> str:
+    mapReq = requests.get(f"https://valorant-api.com/v1/maps")
+    if (MapId == "Unknown"):
+        return "Unknown"
+    mapName = "Unknown"
+    if ((mapReq.status_code == 404) or (mapReq.json()['status'] == 404)):
+        return map
+    maps = mapReq.json()['data']
+    if not maps:
+        return mapName
+    for map in maps:
+        if map['mapUrl'].lower() == MapId.lower():
+            mapName = map['displayName']
+    return mapName
+
+def mapMenu():
+    newWindow = customtkinter.CTkToplevel(app)
+    newWindow.withdraw()
+    newWindow.geometry("900x300")
+    newWindow.title("FuretaPikku Agent Select")
+    newWindow.resizable(0, 0)
+    newWindow.after(250, lambda: newWindow.iconbitmap(image))
+    newWindow.grab_set()
+    tabView = customtkinter.CTkTabview(newWindow, width=870, height=200)
+    tabView.pack(expand= False, pady=20)
+    cbs = {}
+    def ph(newA):
+        selectedMap = tabView.get()
+        comboboxMap = cbs[selectedMap]
+        comboboxMap.set(newA)
+        existingMaps[selectedMap] = newA
+        with open('config.json', 'w') as file:
+            json.dump(config, file, indent=4)
+    for map in existingMaps.keys():
+        tV = tabView.add(map)
+        comboboxAgentsMap = customtkinter.CTkOptionMenu(master=tV, values=list(agents.keys()))
+        comboboxAgentsMap.set(value=existingMaps[map])
+        comboboxAgentsMap.pack(pady=30, anchor= customtkinter.S)
+        sxt = CTkScrollableDropdown(comboboxAgentsMap, values=list(agents.keys()), command=ph)
+        cbs[map] = comboboxAgentsMap
+    def Save():
+        newWindow.destroy()
+        newWindow.update()
+    doneButton = customtkinter.CTkButton(newWindow, text="Done", command=Save)
+    doneButton.pack(pady=20)
+    newWindow.deiconify()
+    
 
 def getPlayerStats(player, side, fillerName):
     playerID = player['Subject']
@@ -1815,9 +1898,23 @@ def start():
     global running
     running = True
     preferredAgent = str(comboboxAgents.get())
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+    
+    preferredAgent = str(comboboxAgents.get())
+    
+    config['agent'] = preferredAgent
+    
     with open('config.json', 'w') as f:
-        config['agent'] = preferredAgent
         json.dump(config, f, indent=4)
+    
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+
+    agents = config['agents']
+    currentMode = config['mapMode']
+    existingMaps = config['mapAgentSelect']
+
     buttonStart.configure(text="Stop", command=stop)
     buttonStartText.configure(text="Waiting For a Match to Begin...", text_color=white_text)
     while running:
@@ -1830,38 +1927,49 @@ def start():
                 return
             else:
                 sessionState = sessionState['sessionLoopState']
-            if ((sessionState == "PREGAME") and (client.pregame_fetch_match()['ID'] not in playedMatches) and (preferredAgent in agents.keys())):
-                buttonStartText.configure(text='Agent Select Screen Found', text_color= white_text)
-                client.pregame_select_character(agents[preferredAgent])
-                client.pregame_lock_character(agents[preferredAgent])
-                playedMatches.append(client.pregame_fetch_match()['ID'])
-                ally = client.pregame_fetch_match()['AllyTeam']
-                ally_team = ally['TeamID']
-                ally_result = "Null"
-                side_color = "#DCE4EE"
-                if (ally_team == 'Red'):
-                    ally_result = 'Attacker'
-                    side_color = red_text
-                elif (ally_team == 'Blue'):
-                    ally_result = 'Defender'
-                    side_color = blue_text
-                buttonStartText.configure(text=f'you are: {ally_result}\nLocked {preferredAgent}', text_color=side_color) 
-            time.sleep(1)
+            if ((sessionState == "PREGAME")):
+                match = client.pregame_fetch_match()
+                if (match['ID'] not in playedMatches):
+                    mapId = match['MapID']
+                    if not match['MapID']:
+                        mapId = "Unknown"
+                    mapName = MapIdToMapName(mapId)
+                    if currentMode == "Map":
+                        preferredAgent = existingMaps[mapName]
+                    if preferredAgent == "None":
+                        print("None IS Selected For This")
+                        continue
+                    buttonStartText.configure(text='Agent Select Screen Found', text_color= white_text)
+                    client.pregame_select_character(agents[preferredAgent])
+                    client.pregame_lock_character(agents[preferredAgent])
+                    playedMatches.append(client.pregame_fetch_match()['ID'])
+                    ally = client.pregame_fetch_match()['AllyTeam']
+                    ally_team = ally['TeamID']
+                    ally_result = "Null"
+                    side_color = "#DCE4EE"
+                    if (ally_team == 'Red'):
+                        ally_result = 'Attacker'
+                        side_color = red_text
+                    elif (ally_team == 'Blue'):
+                        ally_result = 'Defender'
+                        side_color = blue_text
+                    buttonStartText.configure(text=f'you are: {ally_result}\nLocked {preferredAgent}', text_color=side_color) 
+            time.sleep(1.5)
         except Exception as e:
             running = False
             showRegionSelect()
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
-            print(f'{e}')
+            print(e)
             
 
 def startButton():
     print("targeting Thread function start")
-    selThread = threading.Thread(target=start)
+    selThread = threading.Thread(target=start, daemon=True)
     print("Starting thread process for select")
     selThread.start()
 def getHiddenNamesWithStats():
     print("targeting Thread function names")
-    selThread = threading.Thread(target=getHiddenNamesWithStatsPro)
+    selThread = threading.Thread(target=getHiddenNamesWithStatsPro, daemon=True)
     print("Starting thread process for getting hidden names")
     selThread.start()
 
@@ -1873,17 +1981,15 @@ elif ranBefore == True:
         client.activate()
         showSelected()
     except Exception as e:
-        if debug == False:
-            showRegionSelect()
-            labelRegionStats.configure(text=startTheGame, text_color=red_text)
-            print(f'{e}')
-        else:
-            showSelected()
+        showRegionSelect()
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
+        print(f'{e}')
 
 buttonStart.configure(state="normal", command= startButton)
 buttonStartDodge.configure(state="normal", command=dodgeMatch)
 buttonStartCheck.configure(state="normal", command=checkSides)
 buttonGetNames.configure(state="normal", command=getHiddenNames)
 buttonGetNamesWithStats.configure(state="normal", command=getHiddenNamesWithStats)
+buttonAgentsMap.configure(command=mapMenu)
 
 app.mainloop()
