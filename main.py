@@ -36,7 +36,7 @@ def checkFiles():
                 "Sage": "569fdd95-4d10-43ab-ca70-79becc718b46",
                 "Chamber": "22697a3d-45bf-8dd7-4fec-84a9e28c69d7",
                 "Omen": "8e253930-4c05-31dd-1b6c-968525494517",
-                "Brazil": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
+                "Brimstone": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
                 "Astra": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
                 "Viper": "707eab51-4836-f488-046a-cda6bf494859",
                 "Fade": "dade69B4-4f5a-8528-247b-219e5a1facd6",
