@@ -1652,6 +1652,7 @@ def stop():
     global running
     running = False
     buttonStart.configure(text="Start", command=startButton)
+    buttonStartText.configure(text="Pick your Agent or Action and Start :)", text_color=white_text)
 
 def checkSides():
     sessionState = client.fetch_presence(client.puuid)
