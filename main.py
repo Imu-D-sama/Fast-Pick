@@ -31,7 +31,6 @@ def checkFiles():
                 "Breach": "5f8d3a7f-467b-97f3-062c-13acf203c006",
                 "Skye": "6f2a04ca-43e0-be17-7f36-b3908627744d",
                 "Sova": "320b2a48-4d9b-a075-30f1-1f93a9b638fa",
-                "Kayo": "601dbbe7-43ce-be57-2a40-4abd24953621",
                 "Killjoy": "1e58de9c-4950-5125-93e9-a0aee9f98746",
                 "Cypher": "117ed9e3-49f3-6512-3ccf-0cada7e3823b",
                 "Sage": "569fdd95-4d10-43ab-ca70-79becc718b46",
