@@ -34,6 +34,12 @@ A Simple App to Get Players Stats, Lock Agents(You Can Select an Agent For Each 
 2. Press The Desired Button
 3. Done :)
 
+# Credit
+
+- [valclient.py](https://github.com/colinhartigan/valclient.py): A Python wrapper for VALORANT's client API.
+
+- [VALORANT-API](https://valorant-api.com/): A comprehensive API providing in-game data for VALORANT.
+
 # # Is It Bannable ?
 
 **USE THIS AT YOUR OWN RISK.** The VALORANT API this app uses is against The [Riot Terms Of Service](https://www.riotgames.com/en/terms-of-service) So There's no guarantee That you Won't Get Banned
