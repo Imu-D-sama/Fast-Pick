@@ -266,6 +266,8 @@ def updateMaps():
             if map['displayName'] not in currentConfig['mapAgentSelect'].keys():
                 currentConfig['mapAgentSelect'][map['displayName']] = "None"
                 print(f"Added {map['displayName']}")
+        if not currentConfig['mapMode']:
+            currentConfig['mapMode'] = "Normal"
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Maps")
