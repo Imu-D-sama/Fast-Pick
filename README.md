@@ -2,7 +2,7 @@
 
 A Simple App to Get Players Stats, Lock Agents(You Can Select an Agent For Each Map), Dodge a Match, Check Sides in the Select Screen, and Get Hidden Player Names, With A Very Simple GUI
 
-![app](https://i.imgur.com/zHBeHMs.png)
+![app](https://i.imgur.com/wZfKHVG.png)
 
 # Stats Tab
 
