@@ -412,7 +412,7 @@ util_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_rad
 buttonGetNames = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names", state="disabled", width= 85)
 buttonGetNames.place(relx=0.5, rely=0.69, anchor= customtkinter.CENTER)
 boolVar = customtkinter.BooleanVar(value=False)
-buttonGetNamesSwitch = customtkinter.CTkSwitch(master=util_frame, text="Tracker Mode", state="normal", variable=boolVar, onvalue=True, offvalue=False)
+buttonGetNamesSwitch = customtkinter.CTkCheckBox(master=util_frame, text="Tracker Mode", state="normal", variable=boolVar, onvalue=True, offvalue=False)
 buttonGetNamesSwitch.place(relx=0.8, rely=0.69, anchor= customtkinter.CENTER)
 buttonGetNamesWithStats = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names With Stats", state="disabled", width= 85)
 buttonGetNamesWithStats.place(relx=0.5, rely=0.36, anchor= customtkinter.CENTER)
