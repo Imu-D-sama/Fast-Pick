@@ -1,45 +1,71 @@
 # FuretaPikku
 
-A Simple App to Get Players Stats, Lock Agents(You Can Select an Agent For Each Map), Dodge a Match, Check Sides in the Select Screen, and Get Hidden Player Names, With A Very Simple GUI
+**The Ultimate VALORANT Companion App!**  
+Get detailed player stats, lock your favorite agents per map, dodge unwanted matches, check team sides in the select screen, and unveil hidden player names—all with a simple, intuitive GUI.
 
-![app](https://i.imgur.com/wZfKHVG.png)
+![app](https://i.imgur.com/MpbFCmD.png)
 
-# Stats Tab
+## Table of Contents
 
----
+- [Features](#features)
+- [Usage](#usage)
+  - [Getting Started](#getting-started)
+  - [Player Stats](#player-stats)
+  - [Instalocking](#instalocking)
+  - [Dodging and Side Check](#dodging-and-side-check)
+- [Credits](#credits)
+- [Is It Bannable?](#️is-it-bannable)
+
+## Features
+
+- **Player Stats:** Access hidden player stats and details directly within the game.
+- **Instalocking:** Automatically lock your preferred agents per map with ease.
+- **Match Dodging:** Quickly dodge matches if needed.
+- **Side Check:** Check which side you’ll be playing on during agent selection.
+- **Simple GUI:** User-friendly interface for easy navigation and operation.
+
+## Usage
+
+### Getting Started
+
+1. **Select Your Region:**  
+   From the main menu, pick your region to start using the app.
+
+### Player Stats
+
+1. **How to Use:**
+   - Start a match.
+   - Click on "Hidden Names With Stats" in the app.
+   - Wait a moment for the app to gather all the data.
+   - A menu will appear showing all player stats.
 
 ![Stats](https://i.imgur.com/wPE9Eny.png)
 
-# # Usage
-
-**First You Gotta Pick Your Region From The Menu**
-
-### Players Stats
-
-1. Start a Match
-2. Press Hidden Names With Stats
-3. Wait a little bit For it to get Everything
-4. A Menu With All Stats Will Appeare :)
-
 ### Instalocking
 
-1. Select Your Agent(You Can Choose To Select By Map)
-2. Press Start In The App
-3. Start a Match
-4. Your agent is locked Don't Forget To Press Stop :)
+1. **How to Use:**
 
-### Dodging and Side Check In Agent Select
+   - Choose your preferred agent (you can select based on the map).
+   - Press "Start" in the app.
+   - Enter a match in VALORANT.
+   - Your agent will be automatically locked. Remember to press "Stop" when done!
 
-1. Make Sure You Are In Agent Select
-2. Press The Desired Button
-3. Done :)
+### Dodging and Side Check
 
-# Credit
+1. **How to Use:**
 
-- [valclient.py](https://github.com/colinhartigan/valclient.py): A Python wrapper for VALORANT's client API.
+   - Ensure you are in the agent select screen.
+   - Press the desired button to dodge or check sides.
 
-- [VALORANT-API](https://valorant-api.com/): A comprehensive API providing in-game data for VALORANT.
+## Credits
 
-# # Is It Bannable ?
+- **[valclient.py](https://github.com/colinhartigan/valclient.py):**  
+  A Python wrapper for VALORANT's client API, used for fetching in-game data seamlessly.
 
-**USE THIS AT YOUR OWN RISK.** The VALORANT API this app uses is against The [Riot Terms Of Service](https://www.riotgames.com/en/terms-of-service) So There's no guarantee That you Won't Get Banned
+- **[VALORANT-API](https://valorant-api.com/):**  
+  A comprehensive API providing in-game data for VALORANT, essential for displaying player stats and other features in the app.
+
+## ⚠️ Is It Bannable?
+
+**Use This App at Your Own Risk.**  
+FuretaPikku uses unofficial VALORANT APIs that may violate [Riot's Terms of Service](https://www.riotgames.com/en/terms-of-service). There is a potential risk of getting banned, so please proceed with caution.
