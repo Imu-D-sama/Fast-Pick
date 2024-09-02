@@ -45,7 +45,8 @@ def checkFiles():
                 "Iso": "0E38B510-41A8-5780-5E8F-568B2A4F2D6C",
                 "Clove": "1DBF2EDD-4729-0984-3115-DAA5EED44993",
                 "Harbor": "95B78ED7-4637-86D9-7E41-71BA8C293152",
-                "KAY/O": "601dbbe7-43ce-be57-2a40-4abd24953621"
+                "KAY/O": "601dbbe7-43ce-be57-2a40-4abd24953621",
+                "Vyse": "efba5359-4016-a1e5-7626-b1ae76895940"
             },
         "regions": {
             "Europe": "eu",
@@ -282,7 +283,7 @@ def AddedValues():
             currentConfig['delay'] = 4.0
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
-        print("Finished Updating Maps")
+        print("Finished Updating Values")
     except Exception as e:
         print(e)
 # the img in base64 cuz why not :DDD
