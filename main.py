@@ -337,7 +337,7 @@ customtkinter.set_default_color_theme("colorTheme.json")
 
 # app options
 app = customtkinter.CTk()
-app.title("FuretaPikku")
+app.title("Fast Pick")
 app.geometry("900x600")
 app.resizable(False, False)
 app.iconbitmap(image)
@@ -1495,9 +1495,9 @@ Map = agent_frame.add("Map")
 DelayO = agent_frame.add("Delay")
 def decValueDanger(v):
     if v >= 4:
-        return { "text": f"{v}s", "color": white_text }
+        return { "text": f"{v}s Locks After agent select screen (SAFE)", "color": white_text }
     else:
-        return { "text": f"{v}s DANGER !!", "color": red_text }
+        return { "text": f"{v}s Locks before agent select screen (DANGEROUS)", "color": red_text }
 def sliderCommand(v):
     newTextSlider = decValueDanger(v)
     buttonStartSliderText.configure(text=newTextSlider['text'], text_color=newTextSlider['color'])
@@ -1573,7 +1573,7 @@ def mapMenu():
     newWindow = customtkinter.CTkToplevel(app)
     newWindow.withdraw()
     newWindow.geometry("900x300")
-    newWindow.title("FuretaPikku Agent Select")
+    newWindow.title("Fast Pick Agent Select")
     newWindow.resizable(0, 0)
     newWindow.after(250, lambda: newWindow.iconbitmap(image))
     newWindow.grab_set()
@@ -1793,7 +1793,7 @@ def getHiddenNames():
     buttonStartText.configure(text='Found Hidden Names !!', text_color=white_text)
     newWindow = customtkinter.CTkToplevel(app)
     newWindow.geometry("400x390")
-    newWindow.title("FuretaPikku Agent Names")
+    newWindow.title("Fast Pick Agent Names")
     newWindow.resizable(0, 0)
     newWindow.after(250, lambda: newWindow.iconbitmap(image))
     newWindow.grab_set()
@@ -1913,7 +1913,7 @@ def getHiddenNamesWithStatsPro():
             valueOfPlayers.append(atkPlayer)
     newWindow = customtkinter.CTkToplevel(app)
     newWindow.geometry("1050x415")
-    newWindow.title("FuretaPikku Stats Tab")
+    newWindow.title("Fast Pick Stats Tab")
     newWindow.resizable(0, 0)
     newWindow.after(250, lambda: newWindow.iconbitmap(image))
     newWindow.grab_set()
