@@ -1,4 +1,4 @@
-# FuretaPikku
+# Fast Pick
 
 **The Ultimate VALORANT Companion App!**  
 Get detailed player stats, lock your favorite agents per map, dodge unwanted matches, check team sides in the select screen, and unveil hidden player names—all with a simple, intuitive GUI.
@@ -68,4 +68,4 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 ## ⚠️ Is It Bannable?
 
 **Use This App at Your Own Risk.**  
-FuretaPikku uses unofficial VALORANT APIs that may violate [Riot's Terms of Service](https://www.riotgames.com/en/terms-of-service). There is a potential risk of getting banned, so please proceed with caution.
+"Fast Pick" uses unofficial VALORANT APIs that may violate [Riot's Terms of Service](https://www.riotgames.com/en/terms-of-service). There is a potential risk of getting banned, so please proceed with caution.
