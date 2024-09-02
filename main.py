@@ -373,9 +373,11 @@ def selectRegion():
     with open('config.json', 'r') as f:
         newR = json.load(f)
         region = newR['region']
+    global client
     client = Client(region=newRegion)
     try:
         client.activate()
+        print(f"logged in with region: {newRegion}")
     except Exception as e:
         labelRegionStats.configure(text="Make Sure That Valorant Is Running", text_color=white_text)
         print(f'{e}')
