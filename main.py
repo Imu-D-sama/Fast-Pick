@@ -512,6 +512,9 @@ with open('config.json', 'r') as f:
 # app colors
 customtkinter.set_appearance_mode("system")
 customtkinter.set_default_color_theme("colorTheme.json")
+customtkinter.FontManager.default_font_family = "Helvetica"
+customtkinter.FontManager.default_font_size = 12 
+customtkinter.FontManager.default_font_weight = "bold"
 
 # app options
 app = customtkinter.CTk()
@@ -1820,10 +1823,10 @@ def mapMenu():
             json.dump(config, file, indent=4)
     for map in existingMaps.keys():
         tV = tabView.add(map)
-        comboboxAgentsMap = customtkinter.CTkOptionMenu(master=tV, values=list(agents.keys()))
+        comboboxAgentsMap = customtkinter.CTkComboBox(master=tV, values=list(agents.keys()))
         comboboxAgentsMap.set(value=existingMaps[map])
         comboboxAgentsMap.pack(pady=30, anchor= customtkinter.S)
-        sxt = CTkScrollableDropdown(comboboxAgentsMap, values=list(agents.keys()), command=ph)
+        sxt = CTkScrollableDropdown(comboboxAgentsMap, values=list(agents.keys()), command=ph, autocomplete=True)
         cbs[map] = comboboxAgentsMap
     def Save():
         newWindow.destroy()
@@ -1995,7 +1998,7 @@ def getLoadoutsPro():
             sessionState = presence['sessionLoopState']
         if sessionState == "INGAME":
             buttonGetLoadouts.configure(state="disabled", width=80)
-            buttonStartText.configure(text='Getting Loadouts...', text_color=white_text)
+            buttonStartText.configure(text='Getting Loadouts(May Take A While)...', text_color=white_text)
             currentMatch = client.coregame_fetch_match()
             players = currentMatch['Players']
             infoPlayers = {}
