@@ -13,232 +13,406 @@ import pyperclip
 import webbrowser
 import copy
 from valclient.client import Client
-from PIL import Image
+from PIL import Image, ImageDraw
 from io import BytesIO
 
 
 # a function to auto generate config files
-def checkFiles():
-    defaultConfig = {
-        "agents": {
-                "None": "00000",
-                "Jett": "add6443a-41bd-e414-f6ad-e58d267f4e95",
-                "Reyna": "a3bfb853-43b2-7238-a4f1-ad90e9e46bcc",
-                "Raze": "f94c3b30-42be-e959-889c-5aa313dba261",
-                "Yoru": "7f94d92c-4234-0a36-9646-3a87eb8b5c89",
-                "Phoenix": "eb93336a-449b-9c1b-0a54-a891f7921d69",
-                "Neon": "bb2a4828-46eb-8cd1-e765-15848195d751",
-                "Breach": "5f8d3a7f-467b-97f3-062c-13acf203c006",
-                "Skye": "6f2a04ca-43e0-be17-7f36-b3908627744d",
-                "Sova": "320b2a48-4d9b-a075-30f1-1f93a9b638fa",
-                "Killjoy": "1e58de9c-4950-5125-93e9-a0aee9f98746",
-                "Cypher": "117ed9e3-49f3-6512-3ccf-0cada7e3823b",
-                "Sage": "569fdd95-4d10-43ab-ca70-79becc718b46",
-                "Chamber": "22697a3d-45bf-8dd7-4fec-84a9e28c69d7",
-                "Omen": "8e253930-4c05-31dd-1b6c-968525494517",
-                "Brimstone": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
-                "Astra": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
-                "Viper": "707eab51-4836-f488-046a-cda6bf494859",
-                "Fade": "dade69B4-4f5a-8528-247b-219e5a1facd6",
-                "Gekko": "E370FA57-4757-3604-3648-499E1F642D3F",
-                "Deadlock": "CC8B64C8-4B25-4FF9-6E7F-37B4DA43D235",
-                "Iso": "0E38B510-41A8-5780-5E8F-568B2A4F2D6C",
-                "Clove": "1DBF2EDD-4729-0984-3115-DAA5EED44993",
-                "Harbor": "95B78ED7-4637-86D9-7E41-71BA8C293152",
-                "KAY/O": "601dbbe7-43ce-be57-2a40-4abd24953621",
-                "Vyse": "efba5359-4016-a1e5-7626-b1ae76895940"
-            },
-        "regions": {
-            "Europe": "eu",
-            "North America": "na",
-            "Asia Pacific": "ap",
-            "Latin America": "latam",
-            "Brazil": "br",
-            "Korea": "kr"
+defaultConfig = {
+    "agents": {
+            "None": "00000",
+            "Jett": "add6443a-41bd-e414-f6ad-e58d267f4e95",
+            "Reyna": "a3bfb853-43b2-7238-a4f1-ad90e9e46bcc",
+            "Raze": "f94c3b30-42be-e959-889c-5aa313dba261",
+            "Yoru": "7f94d92c-4234-0a36-9646-3a87eb8b5c89",
+            "Phoenix": "eb93336a-449b-9c1b-0a54-a891f7921d69",
+            "Neon": "bb2a4828-46eb-8cd1-e765-15848195d751",
+            "Breach": "5f8d3a7f-467b-97f3-062c-13acf203c006",
+            "Skye": "6f2a04ca-43e0-be17-7f36-b3908627744d",
+            "Sova": "320b2a48-4d9b-a075-30f1-1f93a9b638fa",
+            "Killjoy": "1e58de9c-4950-5125-93e9-a0aee9f98746",
+            "Cypher": "117ed9e3-49f3-6512-3ccf-0cada7e3823b",
+            "Sage": "569fdd95-4d10-43ab-ca70-79becc718b46",
+            "Chamber": "22697a3d-45bf-8dd7-4fec-84a9e28c69d7",
+            "Omen": "8e253930-4c05-31dd-1b6c-968525494517",
+            "Brimstone": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
+            "Astra": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
+            "Viper": "707eab51-4836-f488-046a-cda6bf494859",
+            "Fade": "dade69B4-4f5a-8528-247b-219e5a1facd6",
+            "Gekko": "E370FA57-4757-3604-3648-499E1F642D3F",
+            "Deadlock": "CC8B64C8-4B25-4FF9-6E7F-37B4DA43D235",
+            "Iso": "0E38B510-41A8-5780-5E8F-568B2A4F2D6C",
+            "Clove": "1DBF2EDD-4729-0984-3115-DAA5EED44993",
+            "Harbor": "95B78ED7-4637-86D9-7E41-71BA8C293152",
+            "KAY/O": "601dbbe7-43ce-be57-2a40-4abd24953621",
+            "Vyse": "efba5359-4016-a1e5-7626-b1ae76895940"
         },
-        "region": "eu",
-        "agent": "None",
-        "ran": False,
-        "mapMode": "Normal",
-        "mapAgentSelect": {
-            "Ascent": "None",
-            "Split": "None",
-            "Fracture": "None",
-            "Bind": "None",
-            "Breeze": "None",
-            "Abyss": "None",
-            "Lotus": "None",
-            "Sunset": "None",
-            "Pearl": "None",
-            "Icebox": "None",
-            "Haven": "None"
+    "regions": {
+        "Europe": "eu",
+        "North America": "na",
+        "Asia Pacific": "ap",
+        "Latin America": "latam",
+        "Brazil": "br",
+        "Korea": "kr"
+    },
+    "region": "eu",
+    "agent": "None",
+    "ran": False,
+    "mapMode": "Normal",
+    "mapAgentSelect": {
+        "Ascent": "None",
+        "Split": "None",
+        "Fracture": "None",
+        "Bind": "None",
+        "Breeze": "None",
+        "Abyss": "None",
+        "Lotus": "None",
+        "Sunset": "None",
+        "Pearl": "None",
+        "Icebox": "None",
+        "Haven": "None"
+    },
+    "delay": 4.0,
+    "defaultSkins": {
+        "9c82e19d-4575-0200-1a81-3eacf00cf872": {
+            "name": "Default Vandal",
+            "defaultChroma": "19629ae1-4996-ae98-7742-24a240d41f99",
+            "size": [
+                275,
+                75
+            ],
+            "link": "https://media.valorant-api.com/weapons/9c82e19d-4575-0200-1a81-3eacf00cf872/displayicon.png"
         },
-        "delay": 4.0
-    }
-    # Check file existance and missing agents and maps and update them
-    if not os.path.exists('config.json'):
-        with open('config.json', 'w') as file:
-            json.dump(defaultConfig, file, indent=4)
-    defaultTheme = {
-        "CTk": {
-            "fg_color": ["gray92", "gray14"]
+        "ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a": {
+            "name": "Default Phantom",
+            "size": [
+                275,
+                65
+            ],
+            "link": "https://media.valorant-api.com/weapons/ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a/displayicon.png",
+            "defaultChroma": "52221ba2-4e4c-ec76-8c81-3483506d5242"
         },
-        "CTkToplevel": {
-            "fg_color": ["gray92", "gray14"]
+        "a03b24d3-4319-996d-0f8c-94bbfba1dfc7": {
+            "name": "Default Operator",
+            "size": [
+                300,
+                60
+            ],
+            "link": "https://media.valorant-api.com/weapons/a03b24d3-4319-996d-0f8c-94bbfba1dfc7/displayicon.png",
+            "defaultChroma": "4914f50d-49f9-6424-ca80-9486c45a138d"
         },
-        "CTkFrame": {
-            "corner_radius": 6,
-            "border_width": 0,
-            "fg_color": ["gray86", "gray17"],
-            "top_fg_color": ["gray81", "gray20"],
-            "border_color": ["gray65", "gray28"]
+        "e336c6b8-418d-9340-d77f-7a9e4cfe0702": {
+            "name": "Default Sheriff",
+            "size": [
+                170,
+                75
+            ],
+            "link": "https://media.valorant-api.com/weapons/e336c6b8-418d-9340-d77f-7a9e4cfe0702/displayicon.png",
+            "defaultChroma": "5a59bd61-48a9-af61-c00f-4aa21deca9a8"
         },
-        "CTkButton": {
-            "corner_radius": 6,
-            "border_width": 0,
-            "fg_color": ["#D03434", "#A11D1D"],
-            "hover_color": ["#B22E2E", "#791414"],
-            "border_color": ["#3E454A", "#949A9F"],
-            "text_color": ["#DCE4EE", "#DCE4EE"],
-            "text_color_disabled": ["gray74", "gray60"]
+        "2f59173c-4bed-b6c3-2191-dea9b58be9c7": {
+            "name": "Default Melee",
+            "size": [
+                200,
+                75
+            ],
+            "link": "https://media.valorant-api.com/weapons/2f59173c-4bed-b6c3-2191-dea9b58be9c7/displayicon.png",
+            "defaultChroma": "cac83e5c-47a1-3519-5420-1db1fdbc4892"
         },
-        "CTkLabel": {
-            "corner_radius": 0,
-            "fg_color": "transparent",
-            "text_color": ["gray10", "#DCE4EE"]
+        "29a0cfab-485b-f5d5-779a-b59f85e204a8": {
+            "name": "Default Classic",
+            "size": [
+                120,
+                75
+            ],
+            "link": "https://media.valorant-api.com/weapons/29a0cfab-485b-f5d5-779a-b59f85e204a8/displayicon.png",
+            "defaultChroma": "4b2d5b4f-4955-4208-286c-abadec250cdd"
         },
-        "CTkEntry": {
-            "corner_radius": 6,
-            "border_width": 2,
-            "fg_color": ["#F9F9FA", "#343638"],
-            "border_color": ["#979DA2", "#565B5E"],
-            "text_color": ["gray10", "#DCE4EE"],
-            "placeholder_text_color": ["gray52", "gray62"]
+        "1baa85b4-4c70-1284-64bb-6481dfc3bb4e": {
+            "name": "Default Ghost",
+            "size": [
+                200,
+                65
+            ],
+            "link": "https://media.valorant-api.com/weapons/1baa85b4-4c70-1284-64bb-6481dfc3bb4e/displayicon.png",
+            "defaultChroma": "947a28b6-4e0f-61fb-e795-bc9a5e7b7129"
         },
-        "CTkCheckBox": {
-            "corner_radius": 6,
-            "border_width": 3,
-            "fg_color": ["#D03434", "#A11D1D"],
-            "border_color": ["#3E454A", "#949A9F"],
-            "hover_color": ["#D03434", "#A11D1D"],
-            "checkmark_color": ["#DCE4EE", "gray90"],
-            "text_color": ["gray10", "#DCE4EE"],
-            "text_color_disabled": ["gray60", "gray45"]
+        "63e6c2b6-4a8e-869c-3d4c-e38355226584": {
+            "name": "Default Odin",
+            "size": [
+                310,
+                75
+            ],
+            "link": "https://media.valorant-api.com/weapons/63e6c2b6-4a8e-869c-3d4c-e38355226584/displayicon.png",
+            "defaultChroma": "2f93861d-4b2f-2175-af0c-3ba0c736e257"
         },
-        "CTkSwitch": {
-            "corner_radius": 1000,
-            "border_width": 3,
-            "button_length": 0,
-            "fg_color": ["#939BA2", "#4A4D50"],
-            "progress_color": ["#D03434", "#A11D1D"],
-            "button_color": ["gray36", "#D5D9DE"],
-            "button_hover_color": ["gray20", "gray100"],
-            "text_color": ["gray10", "#DCE4EE"],
-            "text_color_disabled": ["gray60", "gray45"]
+        "55d8a0f4-4274-ca67-fe2c-06ab45efdf58": {
+            "name": "Default Ares",
+            "size": [
+                280,
+                60
+            ],
+            "link": "https://media.valorant-api.com/weapons/55d8a0f4-4274-ca67-fe2c-06ab45efdf58/displayicon.png",
+            "defaultChroma": "b33de820-4061-8b85-31ce-808f1a2c58f5"
         },
-        "CTkRadioButton": {
-            "corner_radius": 1000,
-            "border_width_checked": 6,
-            "border_width_unchecked": 3,
-            "fg_color": ["#D03434", "#A11D1D"],
-            "border_color": ["#3E454A", "#949A9F"],
-            "hover_color": ["#B22E2E", "#791414"],
-            "text_color": ["gray10", "#DCE4EE"],
-            "text_color_disabled": ["gray60", "gray45"]
+        "4ade7faa-4cf1-8376-95ef-39884480959b": {
+            "name": "Default Guardian",
+            "size": [
+                280,
+                60
+            ],
+            "link": "https://media.valorant-api.com/weapons/4ade7faa-4cf1-8376-95ef-39884480959b/displayicon.png",
+            "defaultChroma": "0f934388-418a-a9e7-42a7-21b27402e46c"
         },
-        "CTkProgressBar": {
-            "corner_radius": 1000,
-            "border_width": 0,
-            "fg_color": ["#939BA2", "#4A4D50"],
-            "progress_color": ["#D03434", "#A11D1D"],
-            "border_color": ["gray", "gray"]
+        "ae3de142-4d85-2547-dd26-4e90bed35cf7": {
+            "name": "Default Bulldog",
+            "size": [
+                265,
+                65
+            ],
+            "link": "https://media.valorant-api.com/weapons/ae3de142-4d85-2547-dd26-4e90bed35cf7/displayicon.png",
+            "defaultChroma": "bf35f404-4a14-6953-ced2-5bafd21639a0"
         },
-        "CTkSlider": {
-            "corner_radius": 1000,
-            "button_corner_radius": 1000,
-            "border_width": 6,
-            "button_length": 0,
-            "fg_color": ["#939BA2", "#4A4D50"],
-            "progress_color": ["gray40", "#AAB0B5"],
-            "button_color": ["#D03434", "#A11D1D"],
-            "button_hover_color": ["#B22E2E", "#791414"]
+        "5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c": {
+            "name": "Default Outlaw",
+            "size": [
+                300,
+                60
+            ],
+            "link": "https://media.valorant-api.com/weapons/5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c/displayicon.png",
+            "defaultChroma": "66c8d241-4f7c-6652-3aaa-51bafffbd493"
         },
-        "CTkOptionMenu": {
-            "corner_radius": 6,
-            "fg_color": ["#D03434", "#A11D1D"],
-            "button_color": ["#B22E2E", "#791414"],
-            "button_hover_color": ["#942525", "#661818"],
-            "text_color": ["#DCE4EE", "#DCE4EE"],
-            "text_color_disabled": ["gray74", "gray60"]
+        "c4883e50-4494-202c-3ec3-6b8a9284f00b": {
+            "name": "Default Marshal",
+            "size": [
+                300,
+                60
+            ],
+            "link": "https://media.valorant-api.com/weapons/c4883e50-4494-202c-3ec3-6b8a9284f00b/displayicon.png",
+            "defaultChroma": "1afec971-4170-f29b-1c94-07a0eff270ab"
         },
-        "CTkComboBox": {
-            "corner_radius": 6,
-            "border_width": 2,
-            "fg_color": ["#F9F9FA", "#343638"],
-            "border_color": ["#979DA2", "#565B5E"],
-            "button_color": ["#979DA2", "#565B5E"],
-            "button_hover_color": ["#6E7174", "#7A848D"],
-            "text_color": ["gray10", "#DCE4EE"],
-            "text_color_disabled": ["gray50", "gray45"]
+        "462080d1-4035-2937-7c09-27aa2a5c27a7": {
+            "name": "Default Spectre",
+            "size": [
+                205,
+                70
+            ],
+            "link": "https://media.valorant-api.com/weapons/462080d1-4035-2937-7c09-27aa2a5c27a7/displayicon.png",
+            "defaultChroma": "a9aaccca-4cdc-02ea-1d7e-89bbacecc0e2"
         },
-        "CTkScrollbar": {
-            "corner_radius": 1000,
-            "border_spacing": 4,
-            "fg_color": "transparent",
-            "button_color": ["gray55", "gray41"],
-            "button_hover_color": ["gray40", "gray53"]
+        "ec845bf4-4f79-ddda-a3da-0db3774b2794": {
+            "name": "Default Judge",
+            "size": [
+                270,
+                70
+            ],
+            "link": "https://media.valorant-api.com/weapons/ec845bf4-4f79-ddda-a3da-0db3774b2794/displayicon.png",
+            "defaultChroma": "b71ae8d6-44bb-aa4c-0d2a-dc9ed9e66410"
         },
-        "CTkSegmentedButton": {
-            "corner_radius": 6,
-            "border_width": 2,
-            "fg_color": ["#979DA2", "gray29"],
-            "selected_color": ["#D03434", "#A11D1D"],
-            "selected_hover_color": ["#B22E2E", "#791414"],
-            "unselected_color": ["#979DA2", "gray29"],
-            "unselected_hover_color": ["gray70", "gray41"],
-            "text_color": ["#DCE4EE", "#DCE4EE"],
-            "text_color_disabled": ["gray74", "gray60"]
+        "910be174-449b-c412-ab22-d0873436b21b": {
+            "name": "Default Bucky",
+            "size": [
+                290,
+                50
+            ],
+            "link": "https://media.valorant-api.com/weapons/910be174-449b-c412-ab22-d0873436b21b/displayicon.png",
+            "defaultChroma": "3d8ffcfe-4786-0180-42d7-e1be18dd1cab"
         },
-        "CTkTextbox": {
-            "corner_radius": 6,
-            "border_width": 0,
-            "fg_color": ["#F9F9FA", "#1D1E1E"],
-            "border_color": ["#979DA2", "#565B5E"],
-            "text_color": ["gray10", "#DCE4EE"],
-            "scrollbar_button_color": ["gray55", "gray41"],
-            "scrollbar_button_hover_color": ["gray40", "gray53"]
+        "f7e1b454-4ad4-1063-ec0a-159e56b58941": {
+            "name": "Default Stinger",
+            "size": [
+                200,
+                65
+            ],
+            "link": "https://media.valorant-api.com/weapons/f7e1b454-4ad4-1063-ec0a-159e56b58941/displayicon.png",
+            "defaultChroma": "31bb2115-4c62-d37c-43c4-11b8fee7f212"
         },
-        "CTkScrollableFrame": {
-            "label_fg_color": ["gray78", "gray23"]
+        "44d4e95c-4157-0037-81b2-17841bf2e8e3": {
+            "name": "Default Frenzy",
+            "size": [
+                120,
+                70
+            ],
+            "link": "https://media.valorant-api.com/weapons/44d4e95c-4157-0037-81b2-17841bf2e8e3/displayicon.png",
+            "defaultChroma": "dc99ed5a-4d75-87a0-c921-75963ea3c1e1"
         },
-        "DropdownMenu": {
-            "fg_color": ["gray90", "gray20"],
-            "hover_color": ["gray75", "gray28"],
-            "text_color": ["gray10", "gray90"]
-        },
-        "CTkFont": {
-            "macOS": {
-            "family": "SF Display",
-            "size": 13,
-            "weight": "normal"
-            },
-            "Windows": {
-            "family": "Roboto",
-            "size": 13,
-            "weight": "normal"
-            },
-            "Linux": {
-            "family": "Roboto",
-            "size": 13,
-            "weight": "normal"
-            }
+        "42da8ccc-40d5-affc-beec-15aa47b42eda": {
+            "name": "Default Shorty",
+            "size": [
+                190,
+                60
+            ],
+            "link": "https://media.valorant-api.com/weapons/42da8ccc-40d5-affc-beec-15aa47b42eda/displayicon.png",
+            "defaultChroma": "95608504-4c8b-1408-1612-0f8200421c49"
         }
+    }
+}
+    # Check file existance and missing agents and maps and update them
+if not os.path.exists('config.json'):
+    with open('config.json', 'w') as file:
+        json.dump(defaultConfig, file, indent=4)
+
+defaultTheme = {
+    "CTk": {
+        "fg_color": ["gray92", "gray14"]
+    },
+    "CTkToplevel": {
+        "fg_color": ["gray92", "gray14"]
+    },
+    "CTkFrame": {
+        "corner_radius": 6,
+        "border_width": 0,
+        "fg_color": ["gray86", "gray17"],
+        "top_fg_color": ["gray81", "gray20"],
+        "border_color": ["gray65", "gray28"]
+    },
+    "CTkButton": {
+        "corner_radius": 6,
+        "border_width": 0,
+        "fg_color": ["#D03434", "#A11D1D"],
+        "hover_color": ["#B22E2E", "#791414"],
+        "border_color": ["#3E454A", "#949A9F"],
+        "text_color": ["#DCE4EE", "#DCE4EE"],
+        "text_color_disabled": ["gray74", "gray60"]
+    },
+    "CTkLabel": {
+        "corner_radius": 0,
+        "fg_color": "transparent",
+        "text_color": ["gray10", "#DCE4EE"]
+    },
+    "CTkEntry": {
+        "corner_radius": 6,
+        "border_width": 2,
+        "fg_color": ["#F9F9FA", "#343638"],
+        "border_color": ["#979DA2", "#565B5E"],
+        "text_color": ["gray10", "#DCE4EE"],
+        "placeholder_text_color": ["gray52", "gray62"]
+    },
+    "CTkCheckBox": {
+        "corner_radius": 6,
+        "border_width": 3,
+        "fg_color": ["#D03434", "#A11D1D"],
+        "border_color": ["#3E454A", "#949A9F"],
+        "hover_color": ["#D03434", "#A11D1D"],
+        "checkmark_color": ["#DCE4EE", "gray90"],
+        "text_color": ["gray10", "#DCE4EE"],
+        "text_color_disabled": ["gray60", "gray45"]
+    },
+    "CTkSwitch": {
+        "corner_radius": 1000,
+        "border_width": 3,
+        "button_length": 0,
+        "fg_color": ["#939BA2", "#4A4D50"],
+        "progress_color": ["#D03434", "#A11D1D"],
+        "button_color": ["gray36", "#D5D9DE"],
+        "button_hover_color": ["gray20", "gray100"],
+        "text_color": ["gray10", "#DCE4EE"],
+        "text_color_disabled": ["gray60", "gray45"]
+    },
+    "CTkRadioButton": {
+        "corner_radius": 1000,
+        "border_width_checked": 6,
+        "border_width_unchecked": 3,
+        "fg_color": ["#D03434", "#A11D1D"],
+        "border_color": ["#3E454A", "#949A9F"],
+        "hover_color": ["#B22E2E", "#791414"],
+        "text_color": ["gray10", "#DCE4EE"],
+        "text_color_disabled": ["gray60", "gray45"]
+    },
+    "CTkProgressBar": {
+        "corner_radius": 1000,
+        "border_width": 0,
+        "fg_color": ["#939BA2", "#4A4D50"],
+        "progress_color": ["#D03434", "#A11D1D"],
+        "border_color": ["gray", "gray"]
+    },
+    "CTkSlider": {
+        "corner_radius": 1000,
+        "button_corner_radius": 1000,
+        "border_width": 6,
+        "button_length": 0,
+        "fg_color": ["#939BA2", "#4A4D50"],
+        "progress_color": ["gray40", "#AAB0B5"],
+        "button_color": ["#D03434", "#A11D1D"],
+        "button_hover_color": ["#B22E2E", "#791414"]
+    },
+    "CTkOptionMenu": {
+        "corner_radius": 6,
+        "fg_color": ["#D03434", "#A11D1D"],
+        "button_color": ["#B22E2E", "#791414"],
+        "button_hover_color": ["#942525", "#661818"],
+        "text_color": ["#DCE4EE", "#DCE4EE"],
+        "text_color_disabled": ["gray74", "gray60"]
+    },
+    "CTkComboBox": {
+        "corner_radius": 6,
+        "border_width": 2,
+        "fg_color": ["#F9F9FA", "#343638"],
+        "border_color": ["#979DA2", "#565B5E"],
+        "button_color": ["#979DA2", "#565B5E"],
+        "button_hover_color": ["#6E7174", "#7A848D"],
+        "text_color": ["gray10", "#DCE4EE"],
+        "text_color_disabled": ["gray50", "gray45"]
+    },
+    "CTkScrollbar": {
+        "corner_radius": 1000,
+        "border_spacing": 4,
+        "fg_color": "transparent",
+        "button_color": ["gray55", "gray41"],
+        "button_hover_color": ["gray40", "gray53"]
+    },
+    "CTkSegmentedButton": {
+        "corner_radius": 6,
+        "border_width": 2,
+        "fg_color": ["#979DA2", "gray29"],
+        "selected_color": ["#D03434", "#A11D1D"],
+        "selected_hover_color": ["#B22E2E", "#791414"],
+        "unselected_color": ["#979DA2", "gray29"],
+        "unselected_hover_color": ["gray70", "gray41"],
+        "text_color": ["#DCE4EE", "#DCE4EE"],
+        "text_color_disabled": ["gray74", "gray60"]
+    },
+    "CTkTextbox": {
+        "corner_radius": 6,
+        "border_width": 0,
+        "fg_color": ["#F9F9FA", "#1D1E1E"],
+        "border_color": ["#979DA2", "#565B5E"],
+        "text_color": ["gray10", "#DCE4EE"],
+        "scrollbar_button_color": ["gray55", "gray41"],
+        "scrollbar_button_hover_color": ["gray40", "gray53"]
+    },
+    "CTkScrollableFrame": {
+        "label_fg_color": ["gray78", "gray23"]
+    },
+    "DropdownMenu": {
+        "fg_color": ["gray90", "gray20"],
+        "hover_color": ["gray75", "gray28"],
+        "text_color": ["gray10", "gray90"]
+    },
+    "CTkFont": {
+        "macOS": {
+        "family": "SF Display",
+        "size": 13,
+        "weight": "normal"
+        },
+        "Windows": {
+        "family": "Roboto",
+        "size": 13,
+        "weight": "normal"
+        },
+        "Linux": {
+        "family": "Roboto",
+        "size": 13,
+        "weight": "normal"
+        }
+    }
 }
 
 
-    if not os.path.exists('colorTheme.json'):
-        with open('colorTheme.json', 'w') as f:
-            json.dump(defaultTheme, f, indent=4)
+if not os.path.exists('colorTheme.json'):
+    with open('colorTheme.json', 'w') as tf:
+        json.dump(defaultTheme, tf, indent=4)
+
 def updateAgents():
     try:
         with open('config.json', 'r') as file:
@@ -281,6 +455,8 @@ def AddedValues():
             currentConfig = json.load(file)
         if 'delay' not in currentConfig:
             currentConfig['delay'] = 4.0
+        if 'defaultSkins' not in currentConfig:
+            currentConfig['defaultSkins'] = defaultConfig["defaultSkins"]
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Values")
@@ -299,7 +475,6 @@ def cleanup_temp_files():
 # call fuc to clean temp files 
 cleanup_temp_files()
 # call config files
-checkFiles()
 updateAgents()
 updateMaps()
 AddedValues()
@@ -318,6 +493,8 @@ running = False
 white_text = "#DCE4EE"
 red_text = "#ff0f0f"
 blue_text = "#00FFFF"
+defenderColor = (0, 255, 255, 1)
+attackerColor = (255, 15, 15, 0)
 startTheGame = "Start/Restart Valorant First!!!"
 
 with open('config.json', 'r') as f:
@@ -330,6 +507,7 @@ with open('config.json', 'r') as f:
     currentMode = config['mapMode']
     existingMaps = config['mapAgentSelect']
     sliderValue = config['delay']
+    deWeapons = config['defaultSkins']
 
 # app colors
 customtkinter.set_appearance_mode("system")
@@ -412,12 +590,14 @@ labelRegionStats.place(relx=0.507,rely=0.69, anchor= customtkinter.CENTER)
 
 util_frame = customtkinter.CTkFrame(master=app,width=435 ,height=120, corner_radius=20)
 buttonGetNames = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names", state="disabled", width= 85)
-buttonGetNames.place(relx=0.5, rely=0.69, anchor= customtkinter.CENTER)
+buttonGetNames.place(relx=0.38, rely=0.69, anchor= customtkinter.CENTER)
 boolVar = customtkinter.BooleanVar(value=False)
 buttonGetNamesSwitch = customtkinter.CTkCheckBox(master=util_frame, text="Tracker Mode", state="normal", variable=boolVar, onvalue=True, offvalue=False)
-buttonGetNamesSwitch.place(relx=0.8, rely=0.69, anchor= customtkinter.CENTER)
-buttonGetNamesWithStats = customtkinter.CTkButton(master=util_frame, text="Get Hidden Names With Stats", state="disabled", width= 85)
-buttonGetNamesWithStats.place(relx=0.5, rely=0.36, anchor= customtkinter.CENTER)
+buttonGetNamesSwitch.place(relx=0.68, rely=0.69, anchor= customtkinter.CENTER)
+buttonGetNamesWithStats = customtkinter.CTkButton(master=util_frame, text="Get Stats With Names", state="disabled", width= 85)
+buttonGetNamesWithStats.place(relx=0.38, rely=0.36, anchor= customtkinter.CENTER)
+buttonGetLoadouts = customtkinter.CTkButton(master=util_frame, text="Get Loadouts", state="disabled", width= 85)
+buttonGetLoadouts.place(relx=0.68, rely=0.36, anchor= customtkinter.CENTER)
 '''
 Advanced Scrollable Dropdown class for customtkinter widgets
 Author: Akash Bora
@@ -1571,6 +1751,51 @@ def MapIdToMapName(MapId: str) -> str:
             mapName = map['displayName']
     return mapName
 
+def create_circle_image_with_background(image, new_size, color):
+    image = image.resize(new_size, Image.LANCZOS)
+    image = image.convert("RGBA")
+    size = min(new_size)
+    mask = Image.new("L", (size, size), 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0, size, size), fill=255)
+    circular_image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    circular_image.paste(image, (0, 0), mask)
+    blue_background = Image.new("RGBA", (size, size), color)
+    blue_background.putalpha(mask)
+    final_image = Image.alpha_composite(blue_background, circular_image)
+
+    return final_image
+
+def download_image(url):
+    response = requests.get(url)
+    image_data = response.content
+    return Image.open(BytesIO(image_data))
+
+def inGamePlayerObj(player):
+    agentID = player['CharacterID']
+    agent = findKeysByValue(agents, agentID)[0]
+    playerSide = player['TeamID']
+    allyRC = defenderColor
+    allyR = "Defender"
+    if (playerSide == 'Red'):
+        allyRC = attackerColor
+        allyR = "Attacker"
+    IPO = {
+        "ID": player['Subject'] ,
+        "agentSide": f"{allyR} {agent}",
+        "icon": f"https://media.valorant-api.com/agents/{agentID}/displayicon.png",
+        "color": allyRC,
+        "skins": copy.deepcopy(deWeapons),
+    }
+    return IPO
+        
+def skinToChroma(ID):
+    reqS = requests.get(f"https://valorant-api.com/v1/weapons/skinchromas/{ID}")
+    jsonS = reqS.json()
+    jsonData = jsonS['data']
+    return { "name": jsonData["displayName"], "link": jsonData['fullRender'] }
+        
+    
 def mapMenu():
     newWindow = customtkinter.CTkToplevel(app)
     newWindow.withdraw()
@@ -1753,7 +1978,104 @@ def disProButtons():
     buttonGetNamesWithStats.configure(state="disabled", width=120)
 def enProButtons():
     buttonGetNames.configure(state="normal", width=100)
-    buttonGetNamesWithStats.configure(state="normal", width=120)
+    buttonGetNamesWithStats.configure(state="normal", width=120) 
+
+def getLoadoutsPro():
+    try:
+        presence = client.fetch_presence(client.puuid)
+        if not presence:
+            showRegionSelect()
+            labelRegionStats.configure(text=startTheGame, text_color=red_text)
+            return
+        else:
+            sessionState = presence['sessionLoopState']
+        if sessionState == "INGAME":
+            buttonGetLoadouts.configure(state="disabled", width=80)
+            buttonStartText.configure(text='Getting Loadouts...', text_color=white_text)
+            currentMatch = client.coregame_fetch_match()
+            players = currentMatch['Players']
+            infoPlayers = {}
+            for player in players:
+                if(player['Subject'] == client.puuid):
+                    continue
+                PO = inGamePlayerObj(player)
+                infoPlayers[player['Subject']] = PO
+            
+            if not infoPlayers:
+                buttonStartText.configure(text='No Players Found!!', text_color=red_text)
+                buttonGetLoadouts.configure(state="normal", width=80)
+            loadouts = client.coregame_fetch_match_loadouts()
+            loadouts = loadouts['Loadouts']
+            for loadout in loadouts:
+                loadoutOfPlayer = loadout['Loadout']
+                if loadoutOfPlayer['Subject'] == client.puuid:
+                    continue
+                loadedPlayer = infoPlayers[loadoutOfPlayer['Subject']]['skins']
+                for gunId, gun in loadedPlayer.items():
+                    gunChromaId = loadoutOfPlayer['Items'][gunId]['Sockets']["3ad1b2b2-acdb-4524-852f-954a76ddae0a"]['Item']['ID']
+                    if gunChromaId == gun['defaultChroma']:
+                        continue
+                    updatedLoadout = skinToChroma(gunChromaId)
+                    gun['name'] = updatedLoadout['name']
+                    gun['link'] = updatedLoadout['link']
+            loadoutWindow = customtkinter.CTkToplevel(app)
+            loadoutWindow.withdraw()
+            loadoutWindow.geometry("900x500")
+            loadoutWindow.title("Fast Pick Loadouts Tab")
+            loadoutWindow.resizable(0, 0)
+            loadoutWindow.after(250, lambda: loadoutWindow.iconbitmap(image))
+            loadoutWindow.grab_set()
+            def doneButtonFun():
+                loadoutWindow.destroy()
+            listFrame = customtkinter.CTkScrollableFrame(loadoutWindow, orientation="horizontal")
+            listFrame.pack(fill="both", padx=18, pady=12, expand=True)
+            doneButton = customtkinter.CTkButton(loadoutWindow, text="Done", height=23, command=doneButtonFun)
+            doneButton.pack(padx=20, pady=8)
+            for key, value in infoPlayers.items():
+                agentImg = download_image(value["icon"])
+                cir_img = create_circle_image_with_background(agentImg, (80, 80), value["color"])
+
+                ogimg = customtkinter.CTkImage(
+                    dark_image=cir_img, light_image=cir_img, size=(60, 60)
+                )
+                playerFrame = customtkinter.CTkScrollableFrame(
+                    listFrame, width=330, height=380, fg_color="gray12"
+                )
+                playerFrame.pack(side="left", padx=10, pady=10)
+                imgLabel = customtkinter.CTkLabel(playerFrame, text="", image=ogimg)
+                imgLabel.pack(fill="both", expand=True)
+
+                textLabel = customtkinter.CTkLabel(playerFrame, text=value['agentSide'])
+                textLabel.pack(fill="both")
+
+                for gunIdS, gunS in value["skins"].items():
+                    gunFrame = customtkinter.CTkFrame(playerFrame, height=100)
+                    gunFrame.pack_propagate(False)
+                    gunFrame.pack(fill="x", pady=5)
+                    vandalSkin = download_image(
+                        gunS["link"]
+                    )
+                    gunimg = customtkinter.CTkImage(
+                        light_image=vandalSkin,
+                        dark_image=vandalSkin,
+                        size=(gunS["size"][0], gunS["size"][1]),
+                    )
+                    gunlabel = customtkinter.CTkLabel(gunFrame, image=gunimg, text="")
+                    gunlabel.pack(expand=True)
+                    textLabel = customtkinter.CTkLabel(gunFrame, text=gunS['name'])
+                    textLabel.pack()
+            loadoutWindow.deiconify()
+            buttonGetLoadouts.configure(state="normal", width=80)
+            buttonStartText.configure(text='Got all Players loadouts!!', text_color=white_text)
+        else:
+            buttonStartText.configure(text='You Must Pass Agent Select To Use This!!', text_color=red_text)
+            return
+    except Exception as e:
+        print(e)
+        buttonGetLoadouts.configure(state="normal", width=80)
+        buttonStartText.configure(text='An Error Occurred While Getting loadouts', text_color=red_text)
+    
+
 def getHiddenNames():
     sessionState = client.fetch_presence(client.puuid)
     players = []
@@ -1766,8 +2088,7 @@ def getHiddenNames():
         trackerMode = buttonGetNamesSwitch.get()
     if sessionState == "INGAME":
         buttonStartText.configure(text='Getting Hidden Names', text_color=white_text)
-        matchId = client.coregame_fetch_player()['MatchID']
-        currentMatch = client.coregame_fetch_match(matchId)
+        currentMatch = client.coregame_fetch_match()
         for player in currentMatch['Players']:
             if trackerMode == False:
                 if(player['Subject'] == client.puuid) or (player['PlayerIdentity']['Incognito'] == False):
@@ -1855,8 +2176,7 @@ def getHiddenNamesWithStatsPro():
     if sessionState == "INGAME":
         disProButtons()
         buttonStartText.configure(text='Getting Hidden Names and Stats...', text_color=white_text)
-        matchId = client.coregame_fetch_player()['MatchID']
-        currentMatch = client.coregame_fetch_match(matchId)
+        currentMatch = client.coregame_fetch_match()
         for index, player in enumerate(currentMatch['Players'], start=1):
             playerStats = getPlayerStats(player, player['TeamID'], f"Player{index}")
             if(playerStats["side"] == "Defender"):
@@ -2040,6 +2360,11 @@ def getHiddenNamesWithStats():
     selThread = threading.Thread(target=getHiddenNamesWithStatsPro, daemon=True)
     print("Starting thread process for getting hidden names")
     selThread.start()
+def getLoadouts():
+    print("targeting Thread function names")
+    selThread = threading.Thread(target=getLoadoutsPro, daemon=True)
+    print("Starting thread process for getting Loadouts")
+    selThread.start()
 
 debug = False
 
@@ -2064,5 +2389,6 @@ buttonStartCheck.configure(state="normal", command=checkSides)
 buttonGetNames.configure(state="normal", command=getHiddenNames)
 buttonGetNamesWithStats.configure(state="normal", command=getHiddenNamesWithStats)
 buttonAgentsMap.configure(command=mapMenu)
+buttonGetLoadouts.configure(state="normal", command=getLoadouts)
 
 app.mainloop()
