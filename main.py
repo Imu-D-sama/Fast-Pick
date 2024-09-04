@@ -1839,10 +1839,8 @@ def mapMenu():
 def getPlayerStats(player, side, fillerName):
     playerID = player['Subject']
     playerSide = side
-    ally_result = "Null"
-    if (playerSide == 'Red'):
-        ally_result = 'Attacker'
-    elif (playerSide == 'Blue'):
+    ally_result = "Attacker"
+    if (playerSide == 'Blue'):
         ally_result = 'Defender'
     playerNameData = client.put(
         endpoint="/name-service/v2/players", 
@@ -1886,8 +1884,8 @@ def getPlayerStats(player, side, fillerName):
                 max_tier = max(int(tier) for tier in wins_by_tier.keys())
                 if max_tier > peakRank:
                     peakRank = max_tier
-
-        wins_by_tier_highest = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["WinsByTier"]
+        data["peakrank"] = capitalize_first_letter(RankToTier(peakRank))
+        data["rank"] = capitalize_first_letter(RankToTier(currentRank))
         currentRank = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["CompetitiveTier"]
         currentRR = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["RankedRating"]
         wins = playerMMR["QueueSkills"]["competitive"]["SeasonalInfoBySeasonID"][seasonID]["NumberOfWinsWithPlacements"]
@@ -1900,9 +1898,9 @@ def getPlayerStats(player, side, fillerName):
         data["wr"] = wr
         data["rank"] = capitalize_first_letter(RankToTier(currentRank))
         data["rr"] = currentRR
-        data["peakrank"] = capitalize_first_letter(RankToTier(peakRank))
+        
     except Exception as e:
-        print(f"Error: {e} With Player: {gameName}")
+        print(f"MMR Error: {e} With Player: {gameName}")
     try:
         lastComp = client.fetch(endpoint= f"/mmr/v1/players/{playerID}/competitiveupdates?startIndex=0&endIndex=1&queue=competitive", endpoint_type="pd")
         lastCompData = client.fetch_match_details(lastComp['Matches'][0]['MatchID'])
@@ -1930,7 +1928,7 @@ def getPlayerStats(player, side, fillerName):
             data['kd'] = round(kills/deaths, 2)
         return data
     except Exception as e:
-        print(f"Error: {e} With Player: {gameName}")
+        print(f"last Comp Error: {e} With Player: {gameName}")
     return data
     
     
