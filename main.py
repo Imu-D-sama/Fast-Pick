@@ -1772,6 +1772,10 @@ def download_image(url):
     return Image.open(BytesIO(image_data))
 
 def inGamePlayerObj(player):
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+        agents = config['agents']
+        deWeapons = config['defaultSkins']
     agentID = player['CharacterID']
     agent = findKeysByValue(agents, agentID)[0]
     playerSide = player['TeamID']
