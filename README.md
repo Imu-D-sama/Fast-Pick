@@ -3,7 +3,7 @@
 **The Ultimate VALORANT Companion App!**  
 Get detailed player stats, lock your favorite agents per map, dodge unwanted matches, check team sides in the select screen, and unveil hidden player names—all with a simple, intuitive GUI.
 
-![app](https://i.imgur.com/MpbFCmD.png)
+![app](https://cdn.imgchest.com/files/3yrgcq8nrm4.png)
 
 ## Table of Contents
 
@@ -11,6 +11,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 - [Usage](#usage)
   - [Getting Started](#getting-started)
   - [Player Stats](#player-stats)
+  - [Getting Loadouts](#getting-loadouts)
   - [Instalocking](#instalocking)
   - [Dodging and Side Check](#dodging-and-side-check)
 - [Credits](#credits)
@@ -22,6 +23,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 - **Instalocking:** Automatically lock your preferred agents per map with ease.
 - **Match Dodging:** Quickly dodge matches if needed.
 - **Side Check:** Check which side you’ll be playing on during agent selection.
+- **Get Loadouts:** Will give you all the gun skins that every player has.
 - **Simple GUI:** User-friendly interface for easy navigation and operation.
 
 ## Usage
@@ -40,6 +42,16 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
    - A menu will appear showing all player stats.
 
 ![Stats](https://i.imgur.com/wPE9Eny.png)
+
+### Getting Loadouts
+
+1. **How to Use:**
+
+   - Ensure you are in game and pass the agent select.
+   - Press the "Get Loudouts" Button.
+   - Wait till the program gets all the loadouts(May take a While).
+
+![Loadouts](https://cdn.imgchest.com/files/l7lxcv96x97.png)
 
 ### Instalocking
 

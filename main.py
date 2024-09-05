@@ -73,6 +73,27 @@ defaultConfig = {
         "Haven": "None"
     },
     "delay": 4.0,
+    "skinsOrder": [
+        "Vandal",
+        "Phantom",
+        "Operator",
+        "Sheriff",
+        "Melee",
+        "Classic",
+        "Ghost",
+        "Odin",
+        "Ares",
+        "Guardian",
+        "Bulldog",
+        "Outlaw",
+        "Marshal",
+        "Spectre",
+        "Judge",
+        "Bucky",
+        "Stinger",
+        "Frenzy",
+        "Shorty"
+    ],
     "defaultSkins": {
         "9c82e19d-4575-0200-1a81-3eacf00cf872": {
             "name": "Default Vandal",
@@ -457,6 +478,8 @@ def AddedValues():
             currentConfig['delay'] = 4.0
         if 'defaultSkins' not in currentConfig:
             currentConfig['defaultSkins'] = defaultConfig["defaultSkins"]
+        if 'skinsOrder' not in currentConfig:
+            currentConfig['skinsOrder'] = defaultConfig['skinsOrder']
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Values")
@@ -507,7 +530,6 @@ with open('config.json', 'r') as f:
     currentMode = config['mapMode']
     existingMaps = config['mapAgentSelect']
     sliderValue = config['delay']
-    deWeapons = config['defaultSkins']
 
 # app colors
 customtkinter.set_appearance_mode("system")
@@ -1779,6 +1801,7 @@ def inGamePlayerObj(player):
         config = json.load(f)
         agents = config['agents']
         deWeapons = config['defaultSkins']
+        skinsOrder = config['skinsOrder']
     agentID = player['CharacterID']
     agent = findKeysByValue(agents, agentID)[0]
     playerSide = player['TeamID']
@@ -1787,12 +1810,20 @@ def inGamePlayerObj(player):
     if (playerSide == 'Red'):
         allyRC = attackerColor
         allyR = "Attacker"
+
+    skinsInOrder = {}
+
+    for name in skinsOrder:
+        for key, value in deWeapons.items():
+            if value["name"].replace("Default ", "") == name:
+                skinsInOrder[key] = value
+                break
     IPO = {
         "ID": player['Subject'] ,
         "agentSide": f"{allyR} {agent}",
         "icon": f"https://media.valorant-api.com/agents/{agentID}/displayicon.png",
         "color": allyRC,
-        "skins": copy.deepcopy(deWeapons),
+        "skins": copy.deepcopy(skinsInOrder),
     }
     return IPO
         
