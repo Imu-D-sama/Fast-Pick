@@ -50,6 +50,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
    - Ensure you are in game and pass the agent select.
    - Press the "Get Loudouts" Button.
    - Wait till the program gets all the loadouts(May take a While).
+   - Note: You can reorder and remove skins in the config.json File !!
 
 ![Loadouts](https://cdn.imgchest.com/files/l7lxcv96x97.png)
 
