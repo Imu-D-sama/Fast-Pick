@@ -266,7 +266,8 @@ defaultConfig = {
             "link": "https://media.valorant-api.com/weapons/42da8ccc-40d5-affc-beec-15aa47b42eda/displayicon.png",
             "defaultChroma": "95608504-4c8b-1408-1612-0f8200421c49"
         }
-    }
+    },
+    "CheckForUpdates": True
 }
     # Check file existance and missing agents and maps and update them
 if not os.path.exists('config.json'):
@@ -480,6 +481,8 @@ def AddedValues():
             currentConfig['defaultSkins'] = defaultConfig["defaultSkins"]
         if 'skinsOrder' not in currentConfig:
             currentConfig['skinsOrder'] = defaultConfig['skinsOrder']
+        if 'CheckForUpdates' not in currentConfig:
+            currentConfig['CheckForUpdates'] = defaultConfig['CheckForUpdates']
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Values")
@@ -530,6 +533,7 @@ with open('config.json', 'r') as f:
     currentMode = config['mapMode']
     existingMaps = config['mapAgentSelect']
     sliderValue = config['delay']
+    allowedUpdates = config['CheckForUpdates']
 
 # app colors
 customtkinter.set_appearance_mode("system")
@@ -2403,7 +2407,7 @@ def getLoadouts():
     print("Starting thread process for getting Loadouts")
     selThread.start()
 
-debug = False
+debug = True
 
 if ranBefore != True:
     showRegionSelect()
@@ -2420,6 +2424,27 @@ elif ranBefore == True:
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
             print(f'{e}')
 
+# Check For Updates logic
+
+ver = 2.0
+
+versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
+versionLabel.place(rely=0.956, relx=0.008)
+def CheckForUpdates(currentVer):
+    try:
+        versionLabel.configure(text="Checking For Updates...")
+        rawGitData = requests.get("https://api.github.com/repos/imu-D-sama/Fast-Pick/releases/latest")
+        jsonGitData = rawGitData.json()
+        ver = float(jsonGitData['tag_name'])
+        if ver > currentVer:
+            versionLabel.configure(text=f"Update Found!! {currentVer} > {ver}", text_color=red_text)
+        else:
+            versionLabel.configure(text=f"{ver} Up to Date")
+    except Exception as e :
+        print(f'Error in update logic: {e}')
+if allowedUpdates == True:
+    app.after(250, lambda: CheckForUpdates(ver))
+    
 buttonStart.configure(state="normal", command= startButton)
 buttonStartDodge.configure(state="normal", command=dodgeMatch)
 buttonStartCheck.configure(state="normal", command=checkSides)
@@ -2429,3 +2454,4 @@ buttonAgentsMap.configure(command=mapMenu)
 buttonGetLoadouts.configure(state="normal", command=getLoadouts)
 
 app.mainloop()
+
