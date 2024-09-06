@@ -1727,7 +1727,7 @@ comboboxAgents.set(value=selectedAgent)
 comboboxAgents.place(relx=0.5, rely=0.56, anchor= customtkinter.CENTER)
 buttonAgentsMap = customtkinter.CTkButton(master=Map, text="Select Agent For Each Map")
 buttonAgentsMap.place(relx=0.5, rely=0.4, anchor= customtkinter.CENTER)
-sct = CTkScrollableDropdown(comboboxAgents, values=list(agents.keys()), autocomplete= True)
+sct = CTkScrollableDropdown(comboboxAgents, values=list(agents.keys()), autocomplete= False)
 buttonAgentText = customtkinter.CTkLabel(master=normal, text="Select Your Agent To Start Locking in First:")
 buttonAgentText.place(relx=0.5, rely=0.1, anchor= customtkinter.CENTER)
 
@@ -1861,7 +1861,7 @@ def mapMenu():
         comboboxAgentsMap = customtkinter.CTkComboBox(master=tV, values=list(agents.keys()))
         comboboxAgentsMap.set(value=existingMaps[map])
         comboboxAgentsMap.pack(pady=30, anchor= customtkinter.S)
-        sxt = CTkScrollableDropdown(comboboxAgentsMap, values=list(agents.keys()), command=ph, autocomplete=True)
+        sxt = CTkScrollableDropdown(comboboxAgentsMap, values=list(agents.keys()), command=ph, autocomplete=False)
         cbs[map] = comboboxAgentsMap
     def Save():
         newWindow.destroy()
@@ -2426,7 +2426,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-ver = 2.0
+ver = 2.1
 
 versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
 versionLabel.place(rely=0.956, relx=0.008)
