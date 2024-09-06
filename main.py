@@ -2407,7 +2407,7 @@ def getLoadouts():
     print("Starting thread process for getting Loadouts")
     selThread.start()
 
-debug = True
+debug = False
 
 if ranBefore != True:
     showRegionSelect()
