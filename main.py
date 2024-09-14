@@ -522,18 +522,33 @@ blue_text = "#00FFFF"
 defenderColor = (0, 255, 255, 1)
 attackerColor = (255, 15, 15, 0)
 startTheGame = "Start/Restart Valorant First!!!"
-
-with open('config.json', 'r') as f:
-    config = json.load(f)
-    ranBefore = config['ran']
-    agents = config['agents']
-    region = config['region']
-    regions = config['regions']
-    selectedAgent = config['agent']
-    currentMode = config['mapMode']
-    existingMaps = config['mapAgentSelect']
-    sliderValue = config['delay']
-    allowedUpdates = config['CheckForUpdates']
+try:
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+        ranBefore = config['ran']
+        agents = config['agents']
+        region = config['region']
+        regions = config['regions']
+        selectedAgent = config['agent']
+        currentMode = config['mapMode']
+        existingMaps = config['mapAgentSelect']
+        sliderValue = config['delay']
+        allowedUpdates = config['CheckForUpdates']
+except KeyError as e:
+    print(e)
+    with open('config.json', 'w') as file:
+        json.dump(defaultConfig, file, indent=4)
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+        ranBefore = config['ran']
+        agents = config['agents']
+        region = config['region']
+        regions = config['regions']
+        selectedAgent = config['agent']
+        currentMode = config['mapMode']
+        existingMaps = config['mapAgentSelect']
+        sliderValue = config['delay']
+        allowedUpdates = config['CheckForUpdates']
 
 # app colors
 customtkinter.set_appearance_mode("system")
@@ -2407,7 +2422,9 @@ def getLoadouts():
     print("Starting thread process for getting Loadouts")
     selThread.start()
 
-debug = False
+debug = True
+if "--debug" not in sys.argv:
+    debug = False
 
 if ranBefore != True:
     showRegionSelect()
@@ -2426,7 +2443,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-ver = 2.1
+ver = 2.2
 
 versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
 versionLabel.place(rely=0.956, relx=0.008)
