@@ -2443,7 +2443,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-ver = 2.2
+current_ver = 2.2
 
 versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
 versionLabel.place(rely=0.956, relx=0.008)
@@ -2456,11 +2456,11 @@ def CheckForUpdates(currentVer):
         if ver > currentVer:
             versionLabel.configure(text=f"Update Found!! {currentVer} > {ver}", text_color=red_text)
         else:
-            versionLabel.configure(text=f"{ver} Up to Date")
+            versionLabel.configure(text=f"{currentVer} Up to Date")
     except Exception as e :
         print(f'Error in update logic: {e}')
 if allowedUpdates == True:
-    app.after(250, lambda: CheckForUpdates(ver))
+    app.after(250, lambda: CheckForUpdates(current_ver))
     
 buttonStart.configure(state="normal", command= startButton)
 buttonStartDodge.configure(state="normal", command=dodgeMatch)
