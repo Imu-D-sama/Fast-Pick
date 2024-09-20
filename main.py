@@ -514,7 +514,6 @@ def download_image_to_tempfile(base64img):
 image = download_image_to_tempfile(logo_in_base64)
 
 agents = {}
-playedMatches = []
 running = False
 white_text = "#DCE4EE"
 red_text = "#ff0f0f"
@@ -2351,6 +2350,7 @@ def start():
     buttonStart.configure(text="Stop", command=stop)
     buttonStartText.configure(text="Waiting For a Match to Begin...", text_color=white_text)
     timesLooped = 0
+    playedMatches = []
     while running:
         try:
             if timesLooped > 0:
@@ -2443,7 +2443,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-current_ver = 2.2
+current_ver = 2.3
 
 versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
 versionLabel.place(rely=0.956, relx=0.008)
