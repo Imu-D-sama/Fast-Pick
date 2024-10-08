@@ -3,7 +3,7 @@
 **The Ultimate VALORANT Companion App!**  
 Get detailed player stats, lock your favorite agents per map, dodge unwanted matches, check team sides in the select screen, and unveil hidden player names—all with a simple, intuitive GUI.
 
-![app](https://cdn.imgchest.com/files/3yrgcq8nrm4.png)
+![app](https://cdn.imgchest.com/files/pyvdcmqz28y.png)
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
   - [Instalocking](#instalocking)
   - [Dodging and Side Check](#dodging-and-side-check)
 - [Credits](#credits)
-- [Is It Bannable?](#️is-it-bannable)
+- [Is It Bannable?](#is-it-bannable)
 
 ## Features
 
@@ -58,7 +58,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 
 1. **How to Use:**
 
-   - Choose your preferred agent (you can select based on the map).
+   - Choose your preferred agent (you can select based on the map or random for random agent).
    - Press "Start" in the app.
    - Enter a match in VALORANT.
    - Your agent will be automatically locked. Remember to press "Stop" when done!
@@ -78,7 +78,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 - **[VALORANT-API](https://valorant-api.com/):**  
   A comprehensive API providing in-game data for VALORANT, essential for displaying player stats and other features in the app.
 
-## ⚠️ Is It Bannable?
+## Is It Bannable?
 
 **Use This App at Your Own Risk.**  
 "Fast Pick" uses unofficial VALORANT APIs that may violate [Riot's Terms of Service](https://www.riotgames.com/en/terms-of-service). There is a potential risk of getting banned, so please proceed with caution.
