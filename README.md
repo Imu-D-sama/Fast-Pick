@@ -15,6 +15,7 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
   - [Instalocking](#instalocking)
   - [Dodging and Side Check](#dodging-and-side-check)
 - [Credits](#credits)
+- [Social](#social)
 - [Is It Bannable?](#is-it-bannable)
 
 ## Features
@@ -77,6 +78,10 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 
 - **[VALORANT-API](https://valorant-api.com/):**  
   A comprehensive API providing in-game data for VALORANT, essential for displaying player stats and other features in the app.
+
+## Social
+
+- [Discord Server](https://discord.gg/dD2JdMxHaG)
 
 ## Is It Bannable?
 
