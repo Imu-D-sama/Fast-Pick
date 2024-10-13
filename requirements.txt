@@ -2,3 +2,4 @@ customtkinter
 requests
 valclient
 Pillow
+pyperclip
