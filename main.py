@@ -520,6 +520,7 @@ running = False
 white_text = "#DCE4EE"
 red_text = "#ff0f0f"
 blue_text = "#00FFFF"
+yellow_text = "#e8ec97"
 defenderColor = (0, 255, 255, 1)
 attackerColor = (255, 15, 15, 0)
 startTheGame = "Start/Restart Valorant First!!!"
@@ -1923,7 +1924,8 @@ def getPlayerStats(player, side, fillerName):
         "peakrank": "N/a",
         "wr": "N/a",
         "kd": "N/a",
-        "hs": "N/a"
+        "hs": "N/a",
+        "totalGames": "N/a"
     }
     try:
         playerMMR = client.fetch_mmr(playerID)
@@ -1949,6 +1951,7 @@ def getPlayerStats(player, side, fillerName):
             wr = int(wins / total_games * 100)
         except ZeroDivisionError:
             wr = 100
+        data["totalGames"] = total_games
         data["wr"] = wr
         data["rank"] = capitalize_first_letter(RankToTier(currentRank))
         data["rr"] = currentRR
@@ -2033,9 +2036,11 @@ def dodgeMatch():
     else:
         buttonStartText.configure(text='You Must Be In Agent Select First', text_color=red_text)
 def disProButtons():
+    buttonGetLoadouts.configure(state="disabled", width=80)
     buttonGetNames.configure(state="disabled", width=100)
     buttonGetNamesWithStats.configure(state="disabled", width=120)
 def enProButtons():
+    buttonGetLoadouts.configure(state="normal", width=80)
     buttonGetNames.configure(state="normal", width=100)
     buttonGetNamesWithStats.configure(state="normal", width=120) 
 
@@ -2049,7 +2054,7 @@ def getLoadoutsPro():
         else:
             sessionState = presence['sessionLoopState']
         if sessionState == "INGAME":
-            buttonGetLoadouts.configure(state="disabled", width=80)
+            disProButtons()
             buttonStartText.configure(text='Getting Loadouts(May Take A While)...', text_color=white_text)
             currentMatch = client.coregame_fetch_match()
             players = currentMatch['Players']
@@ -2062,7 +2067,7 @@ def getLoadoutsPro():
             
             if not infoPlayers:
                 buttonStartText.configure(text='No Players Found!!', text_color=red_text)
-                buttonGetLoadouts.configure(state="normal", width=80)
+                enProButtons()
             loadouts = client.coregame_fetch_match_loadouts()
             loadouts = loadouts['Loadouts']
             for loadout in loadouts:
@@ -2125,14 +2130,14 @@ def getLoadoutsPro():
                     textLabel = customtkinter.CTkLabel(gunFrame, text=skinName)
                     textLabel.pack(fill="x")
             loadoutWindow.deiconify()
-            buttonGetLoadouts.configure(state="normal", width=80)
+            enProButtons()
             buttonStartText.configure(text='Got all Players loadouts!!', text_color=white_text)
         else:
             buttonStartText.configure(text='You Must Pass Agent Select To Use This!!', text_color=red_text)
             return
     except Exception as e:
         print(e)
-        buttonGetLoadouts.configure(state="normal", width=80)
+        enProButtons()
         buttonStartText.configure(text='An Error Occurred While Getting loadouts', text_color=red_text)
     
 
@@ -2266,7 +2271,7 @@ def getHiddenNamesWithStatsPro():
         return
     enProButtons()
     buttonStartText.configure(text='Found Hidden Names and Stats !!', text_color=white_text)
-    valueOfPlayers = [["Side Agent:", "Name:", "Rank(RR):", "Peak Rank", "WinRate%", "KD%", "HeadShot%"]]
+    valueOfPlayers = [["Side Agent:", "Name:", "Rank(RR):", "Peak Rank", "WinRate%(TG)", "KD%", "HeadShot%"]]
     if defplayers:
         for defplayer in defplayers:
             fullName = defplayer["fullPlayerName"]
@@ -2276,9 +2281,10 @@ def getHiddenNamesWithStatsPro():
             rr = defplayer["rr"]
             peakRank = defplayer["peakrank"]
             wr = defplayer["wr"]
+            totalGames = defplayer["totalGames"]
             kd = defplayer["kd"]
             hs = defplayer["hs"]
-            defPlayer = [ f"{side} {agent}", f"{fullName}", f"{rank}({rr})", f"{peakRank}", f"{wr}", f"{kd}", f"{hs}"]
+            defPlayer = [ f"{side} {agent}", f"{fullName}", f"{rank}({rr})", f"{peakRank}", f"{wr}({totalGames})", f"{kd}", f"{hs}"]
             valueOfPlayers.append(defPlayer)
     if atkplayers:
         for atkplayer in atkplayers:
@@ -2289,9 +2295,10 @@ def getHiddenNamesWithStatsPro():
             rr = atkplayer["rr"]
             peakRank = atkplayer["peakrank"]
             wr = atkplayer["wr"]
+            totalGames = atkplayer["totalGames"]
             kd = atkplayer["kd"]
             hs = atkplayer["hs"]
-            atkPlayer = [ f"{side} {agent}", f"{fullName}", f"{rank}({rr})", f"{peakRank}", f"{wr}", f"{kd}", f"{hs}"]
+            atkPlayer = [ f"{side} {agent}", f"{fullName}", f"{rank}({rr})", f"{peakRank}", f"{wr}({totalGames})", f"{kd}", f"{hs}"]
             valueOfPlayers.append(atkPlayer)
     newWindow = customtkinter.CTkToplevel(app)
     newWindow.geometry("1050x415")
@@ -2303,6 +2310,9 @@ def getHiddenNamesWithStatsPro():
     tree.pack(expand= False, pady=20)
     for i in range(1, 11):
         rowS = tree.get_row(i)
+        if str(rowS[1]) == f"{client.player_name}#{client.player_tag}":
+            tree.edit_row(i, text_color=yellow_text)
+            continue
         if "Defender" in str(rowS[0]):
             tree.edit_row(i, text_color=blue_text)
         else:
@@ -2450,7 +2460,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-current_ver = 2.3
+current_ver = 2.4
 
 versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
 versionLabel.place(rely=0.956, relx=0.008)
