@@ -269,7 +269,8 @@ defaultConfig = {
             "defaultChroma": "95608504-4c8b-1408-1612-0f8200421c49"
         }
     },
-    "CheckForUpdates": True
+    "CheckForUpdates": True,
+    "Scaling": 100,
 }
     # Check file existance and missing agents and maps and update them
 if not os.path.exists('config.json'):
@@ -468,6 +469,8 @@ def updateMaps():
                 print(f"Added {map['displayName']}")
         if 'mapMode' not in currentConfig:
             currentConfig['mapMode'] = "Normal"
+        if 'Scaling' not in currentConfig:
+            currentConfig['Scaling'] = defaultConfig['Scaling']
         with open('config.json', 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Maps")
@@ -536,6 +539,7 @@ try:
         existingMaps = config['mapAgentSelect']
         sliderValue = config['delay']
         allowedUpdates = config['CheckForUpdates']
+        Scaling = config['Scaling']
 except KeyError as e:
     print(e)
     with open('config.json', 'w') as file:
@@ -551,6 +555,7 @@ except KeyError as e:
         existingMaps = config['mapAgentSelect']
         sliderValue = config['delay']
         allowedUpdates = config['CheckForUpdates']
+        Scaling = config['Scaling']
 
 # app colors
 customtkinter.set_appearance_mode("system")
@@ -558,6 +563,8 @@ customtkinter.set_default_color_theme("colorTheme.json")
 customtkinter.FontManager.default_font_family = "Helvetica"
 customtkinter.FontManager.default_font_size = 12 
 customtkinter.FontManager.default_font_weight = "bold"
+customtkinter.set_window_scaling(Scaling / 100)
+customtkinter.set_widget_scaling(Scaling / 100)
 
 # app options
 app = customtkinter.CTk()
@@ -2460,7 +2467,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-current_ver = 2.4
+current_ver = 2.5
 
 versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
 versionLabel.place(rely=0.956, relx=0.008)
