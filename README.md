@@ -3,7 +3,7 @@
 **The Ultimate VALORANT Companion App!**  
 Get detailed player stats, lock your favorite agents per map, dodge unwanted matches, check team sides in the select screen, and unveil hidden player names—all with a simple, intuitive GUI.
 
-![app](https://cdn.imgchest.com/files/pyvdcmqz28y.png)
+![app](https://cdn.imgchest.com/files/d7ogczx3dxy.png)
 
 ## Table of Contents
 
@@ -30,6 +30,8 @@ Get detailed player stats, lock your favorite agents per map, dodge unwanted mat
 ## Usage
 
 ### Getting Started
+
+- [Here's a video tutorial :)](https://fast-pick.online/tut.mp4)
 
 1. **Select Your Region:**  
    From the main menu, pick your region to start using the app.
