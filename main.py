@@ -2284,13 +2284,10 @@ def getHiddenNames():
     for hiddenPlayer in players:
         ally_team = hiddenPlayer['TeamID']
         ally_result = "Null"
-        side_color = "#DCE4EE"
         if (ally_team == 'Red'):
             ally_result = 'Attacker'
-            side_color = red_text
         elif (ally_team == 'Blue'):
             ally_result = 'Defender'
-            side_color = blue_text
         agent_keys = findKeysByValue(agents, hiddenPlayer['CharacterID'])
         agent = agent_keys[0] if agent_keys else "Undefined"
         if (agent == "Undefined") and sessionState == "PREGAME":
@@ -2310,7 +2307,7 @@ def getHiddenNames():
                 webbrowser.open(f"https://tracker.gg/valorant/profile/riot/{fullName}/overview")
             else:
                 pyperclip.copy(f"{fullName}")
-        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: decideCopy(fullName), text_color=side_color)
+        button = customtkinter.CTkButton(mainFrame, text=f"{ally_result} {agent}: {playerName}{playerTag}", corner_radius=30, command=lambda fullName=fullName: decideCopy(fullName))
         button.pack(pady=5, anchor="nw")
     return
 def getHiddenNamesWithStatsPro():
