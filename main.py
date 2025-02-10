@@ -2,9 +2,7 @@ import os
 import requests
 import customtkinter
 import json
-import tempfile
 import threading
-import glob
 import difflib
 import sys
 import time
@@ -274,9 +272,16 @@ defaultConfig = {
     "Scaling": 100,
     "Theme": "System"
 }
-    # Check file existance and missing agents and maps and update them
-if not os.path.exists('config.json'):
-    with open('config.json', 'w') as file:
+# get paths
+appDataFolderName = 'FastPick'
+appDataPath = os.path.join(os.getenv('APPDATA'), appDataFolderName)
+os.makedirs(appDataPath, exist_ok=True)
+configPath = os.path.join(appDataPath, 'config.json')
+themePath = os.path.join(appDataPath, 'colorTheme.json')
+iconPath = os.path.join(appDataPath, 'FastPick.ico')
+# Check file existance and missing agents and maps and update them
+if not os.path.exists(configPath):
+    with open(configPath, 'w') as file:
         json.dump(defaultConfig, file, indent=4)
 
 defaultTheme = {
@@ -436,13 +441,13 @@ defaultTheme = {
 }
 
 
-if not os.path.exists('colorTheme.json'):
-    with open('colorTheme.json', 'w') as tf:
+if not os.path.exists(themePath):
+    with open(themePath, 'w') as tf:
         json.dump(defaultTheme, tf, indent=4)
 
 def updateAgents():
     try:
-        with open('config.json', 'r') as file:
+        with open(configPath, 'r') as file:
             currentConfig = json.load(file)
         apiAgentsData = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true")
         apiAgentsData = apiAgentsData.json()
@@ -451,14 +456,14 @@ def updateAgents():
             if agent['displayName'] not in currentConfig['agents'].keys():
                 currentConfig['agents'][agent['displayName']] = agent['uuid']
                 print(f"Added {agent['displayName']}")
-        with open('config.json', 'w') as file:
+        with open(configPath, 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Agents")
     except Exception as e:
         print(e)
 def updateMaps():
     try:
-        with open('config.json', 'r') as file:
+        with open(configPath, 'r') as file:
             currentConfig = json.load(file)
         apiMapsData = requests.get("https://valorant-api.com/v1/maps")
         apiMapsData = apiMapsData.json()
@@ -473,14 +478,14 @@ def updateMaps():
             currentConfig['mapMode'] = "Normal"
         if 'Scaling' not in currentConfig:
             currentConfig['Scaling'] = defaultConfig['Scaling']
-        with open('config.json', 'w') as file:
+        with open(configPath, 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Maps")
     except Exception as e:
         print(e)
 def AddedValues():
     try:
-        with open('config.json', 'r') as file:
+        with open(configPath, 'r') as file:
             currentConfig = json.load(file)
         if 'delay' not in currentConfig:
             currentConfig['delay'] = 4.0
@@ -490,7 +495,7 @@ def AddedValues():
             currentConfig['CheckForUpdates'] = defaultConfig['CheckForUpdates']
         if 'Theme' not in currentConfig:
             currentConfig['Theme'] = "System"
-        with open('config.json', 'w') as file:
+        with open(configPath, 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Values")
     except Exception as e:
@@ -505,28 +510,21 @@ def settingsLogo():
     image = Image.open(BytesIO(image_data))
     return image
 settingsImage = settingsLogo()
-# cleaning icons from the temp file so it doesn't fill up storage over time :) kinda stupid
-def cleanup_temp_files():
-    for temp_file in glob.glob(os.path.join(tempfile.gettempdir(), "*.ico")):
-        try:
-            os.remove(temp_file)
-        except Exception as e:
-            print(f"Error deleting file {temp_file}: {e}")
-
-# call fuc to clean temp files 
-cleanup_temp_files()
 # call config files
 updateAgents()
 updateMaps()
 AddedValues()
 # convert from base64 to an ico file
-def download_image_to_tempfile(base64img):
+def download_image(base64img):
     procc = base64.b64decode(base64img)
     image = Image.open(BytesIO(procc))
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".ico")
-    image.save(temp_file.name)
-    return temp_file.name
-image = download_image_to_tempfile(reIm())
+    iconPathExist = os.path.exists(iconPath)
+    if not iconPathExist:
+        image.save(iconPath)
+        return iconPath
+    else:
+        return iconPath
+image = download_image(reIm())
 
 agents = {}
 running = False
@@ -538,7 +536,7 @@ defenderColor = (0, 255, 255, 1)
 attackerColor = (255, 15, 15, 0)
 startTheGame = "Start/Restart Valorant First!!!"
 try:
-    with open('config.json', 'r') as f:
+    with open(configPath, 'r') as f:
         config = json.load(f)
         ranBefore = config['ran']
         agents = config['agents']
@@ -553,9 +551,9 @@ try:
         Theme = config['Theme']
 except KeyError as e:
     print(e)
-    with open('config.json', 'w') as file:
+    with open(configPath, 'w') as file:
         json.dump(defaultConfig, file, indent=4)
-    with open('config.json', 'r') as f:
+    with open(configPath, 'r') as f:
         config = json.load(f)
         ranBefore = config['ran']
         agents = config['agents']
@@ -571,7 +569,7 @@ except KeyError as e:
 
 # app colors
 customtkinter.set_appearance_mode(Theme)
-customtkinter.set_default_color_theme("colorTheme.json")
+customtkinter.set_default_color_theme(themePath)
 customtkinter.FontManager.default_font_family = "Helvetica"
 customtkinter.FontManager.default_font_size = 12 
 customtkinter.FontManager.default_font_weight = "bold"
@@ -596,7 +594,7 @@ def findKeysByValue(ob, value):
 
 # settings menu
 def settingsMenu():
-    with open('config.json', 'r') as file:
+    with open(configPath, 'r') as file:
         config = json.load(file)
     settingsWindow = customtkinter.CTkToplevel(app)
     settingsWindow.title("Settings")
@@ -624,7 +622,7 @@ def settingsMenu():
                 return
             customtkinter.set_appearance_mode(v)
             config['Theme'] = v
-            with open('config.json', 'w') as file:
+            with open(configPath, 'w') as file:
                 json.dump(config, file, indent=4)
         difThemeButton = customtkinter.CTkButton(buttonFrameTheme, width=30, height=20, text=ButtonsTheme, command=lambda ButtonsTheme=ButtonsTheme: changeThemeFunc(ButtonsTheme))
         difThemeButton.pack(side="left", padx=20)
@@ -643,7 +641,7 @@ def settingsMenu():
             config['Scaling'] = v
             customtkinter.set_window_scaling(v / 100)
             customtkinter.set_widget_scaling(v / 100)
-            with open('config.json', 'w') as file:
+            with open(configPath, 'w') as file:
                 json.dump(config, file, indent=4)
         scaleButton = customtkinter.CTkButton(buttonFrameScale, width=30, height=20, text=str(defaultNumber),
                                               command=lambda defaultNumber=defaultNumber: changeScaleButton(defaultNumber))
@@ -670,11 +668,11 @@ def showSelected():
 def selectRegion():
     newRegion = str(comboboxRegion.get())
     newRegion = regions[newRegion]
-    with open('config.json', 'w') as f:
+    with open(configPath, 'w') as f:
         config['region'] = newRegion
         config['ran'] = True
         json.dump(config, f, indent=4)
-    with open('config.json', 'r') as f:
+    with open(configPath, 'r') as f:
         newR = json.load(f)
         region = newR['region']
     global client
@@ -1796,7 +1794,7 @@ def switchSelectingMode():
     if newMode == "Delay":
         return
     config['mapMode'] = newMode
-    with open('config.json', 'w') as file:
+    with open(configPath, 'w') as file:
         json.dump(config, file, indent=4)
 agent_frame = customtkinter.CTkTabview(master=app, width=435 ,height=140, corner_radius=20, command=switchSelectingMode)
 normal = agent_frame.add("Normal")
@@ -1812,7 +1810,7 @@ def sliderCommand(v):
     newTextSlider = decValueDanger(v)
     buttonStartSliderText.configure(text=newTextSlider['text'], text_color=newTextSlider['color'])
     config['delay'] = v
-    with open('config.json', 'w') as file:
+    with open(configPath, 'w') as file:
         json.dump(config, file, indent=4)
 buttonStartDelay = customtkinter.CTkSlider(master=DelayO, from_=0, to=8, number_of_steps=16, command=sliderCommand)
 buttonStartDelay.set(sliderValue)
@@ -1824,7 +1822,7 @@ agent_frame.set(currentMode)
 def selectAgent(a):
     comboboxAgents.set(a)
     config['agent'] = str(a)
-    with open('config.json', 'w') as f:
+    with open(configPath, 'w') as f:
         json.dump(config, f, indent=4)
 comboboxAgents = customtkinter.CTkComboBox(master=normal, values=list(agents.keys()), state="readonly", command=selectAgent)
 comboboxAgents.set(value=selectedAgent)
@@ -1907,7 +1905,7 @@ def download_image(url):
     return Image.open(BytesIO(image_data))
 
 def inGamePlayerObj(player):
-    with open('config.json', 'r') as f:
+    with open(configPath, 'r') as f:
         config = json.load(f)
         agents = config['agents']
         skinsOrder = config['skinsOrder']
@@ -1960,7 +1958,7 @@ def mapMenu():
         comboboxMap = cbs[selectedMap]
         comboboxMap.set(newA)
         existingMaps[selectedMap] = newA
-        with open('config.json', 'w') as file:
+        with open(configPath, 'w') as file:
             json.dump(config, file, indent=4)
     for map in existingMaps.keys():
         tV = tabView.add(map)
@@ -2428,7 +2426,7 @@ def start():
     running = True
     preferredAgent = str(comboboxAgents.get())
     
-    with open('config.json', 'r') as f:
+    with open(configPath, 'r') as f:
         config = json.load(f)
         agents = config['agents']
         currentMode = config['mapMode']
@@ -2524,7 +2522,7 @@ class TextRedirector:
 
     def flush(self):
         pass
-if '--debug' in sys.argv:
+if '--debug' in sys.argv or '-d' in sys.argv:
     debug = True
     debugWindow = customtkinter.CTkToplevel(app)
     debugWindow.title("Fast Pick Debug Window")
