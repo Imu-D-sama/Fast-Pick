@@ -1,4 +1,5 @@
 import os
+import subprocess
 import requests
 import customtkinter
 import json
@@ -279,6 +280,8 @@ os.makedirs(appDataPath, exist_ok=True)
 configPath = os.path.join(appDataPath, 'config.json')
 themePath = os.path.join(appDataPath, 'colorTheme.json')
 iconPath = os.path.join(appDataPath, 'FastPick.ico')
+updateScriptPath = os.path.join(appDataPath, 'update.bat')
+newVersionPath = os.path.join(appDataPath, 'Fast-Pick.exe')
 # Check file existance and missing agents and maps and update them
 if not os.path.exists(configPath):
     with open(configPath, 'w') as file:
@@ -444,6 +447,50 @@ defaultTheme = {
 if not os.path.exists(themePath):
     with open(themePath, 'w') as tf:
         json.dump(defaultTheme, tf, indent=4)
+
+        
+if not os.path.exists(updateScriptPath):
+    with open(updateScriptPath, 'w') as uf:
+        uf.write("""@echo off
+setlocal
+
+if "%~1"=="" (
+    echo [ERROR] Missing first argument: Path to the old file.
+    pause
+    exit /b 1
+)
+if "%~2"=="" (
+    echo [ERROR] Missing second argument: Path to the new file.
+    pause
+    exit /b 1
+)
+
+if not exist "%~1" (
+    echo [ERROR] Old file does not exist: "%~1"
+    pause
+    exit /b 1
+)
+if not exist "%~2" (
+    echo [ERROR] New file does not exist: "%~2"
+    pause
+    exit /b 1
+)
+timeout /t 2 /nobreak >nul
+del "%~1" >nul 2>&1
+if exist "%~1" (
+    echo [ERROR] Failed to delete the old file.
+    pause
+    exit /b 1
+)
+move "%~2" "%~1" >nul 2>&1
+if not exist "%~1" (
+    echo [ERROR] Failed to replace the file.
+    pause
+    exit /b 1
+)
+start "" "%~1"
+exit
+""")
 
 def updateAgents():
     try:
@@ -2555,9 +2602,31 @@ elif ranBefore == True:
 # Check For Updates logic
 
 current_ver = 2.7
-
-versionLabel = customtkinter.CTkLabel(app, text="", anchor="w")
+versionLabel = customtkinter.CTkButton(app, text="", anchor="w", fg_color="transparent")
 versionLabel.place(rely=0.956, relx=0.008)
+def updateApp():
+    currentPath = os.path.abspath(sys.argv[0])
+    def download_update():
+        """Downloads the latest executable from GitHub."""
+        try:
+            response = requests.get("https://github.com/imu-D-sama/Fast-Pick/releases/latest/download/Fast-Pick.exe", timeout=10, stream=True)
+            if response.status_code == 200:
+                with open(newVersionPath, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                return True
+        except requests.RequestException as e:
+            print(f"Error downloading update: {e}")
+        except Exception as f:
+            print(f"Failed to Update: {f}")
+        return False
+    downloadedLatest = download_update()
+    if downloadedLatest:
+        subprocess.Popen(["cmd.exe", "/c", updateScriptPath, currentPath, newVersionPath], close_fds=True)
+        sys.exit()
+    else:
+        versionLabel.configure(text="Couldn't update, please update manually!!", command=None, state="disabled")
 def CheckForUpdates(currentVer):
     try:
         versionLabel.configure(text="Checking For Updates...")
@@ -2565,9 +2634,10 @@ def CheckForUpdates(currentVer):
         jsonGitData = rawGitData.json()
         ver = float(jsonGitData['tag_name'])
         if ver > currentVer:
-            versionLabel.configure(text=f"Update Found!! {currentVer} > {ver}", text_color=red_text)
+            versionLabel.configure(text=f"Update Found!! {currentVer} > {ver}, Click Here To Update!!", text_color=red_text, command=updateApp)
         else:
-            versionLabel.configure(text=f"{currentVer} Up to Date")
+            versionLabel.configure(text=f"{currentVer} Up to Date", command=None, state="disabled")
+            app.after(7000, versionLabel.destroy)
     except Exception as e :
         print(f'Error in update logic: {e}')
 if allowedUpdates == True:
