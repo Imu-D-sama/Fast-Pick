@@ -96,182 +96,182 @@ defaultConfig = {
         "Frenzy",
         "Shorty"
     ],
-    "defaultSkins": {
-        "9c82e19d-4575-0200-1a81-3eacf00cf872": {
-            "name": "Default Vandal",
-            "defaultChroma": "19629ae1-4996-ae98-7742-24a240d41f99",
-            "size": [
-                275,
-                75
-            ],
-            "link": "https://media.valorant-api.com/weapons/9c82e19d-4575-0200-1a81-3eacf00cf872/displayicon.png"
-        },
-        "ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a": {
-            "name": "Default Phantom",
-            "size": [
-                275,
-                65
-            ],
-            "link": "https://media.valorant-api.com/weapons/ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a/displayicon.png",
-            "defaultChroma": "52221ba2-4e4c-ec76-8c81-3483506d5242"
-        },
-        "a03b24d3-4319-996d-0f8c-94bbfba1dfc7": {
-            "name": "Default Operator",
-            "size": [
-                300,
-                60
-            ],
-            "link": "https://media.valorant-api.com/weapons/a03b24d3-4319-996d-0f8c-94bbfba1dfc7/displayicon.png",
-            "defaultChroma": "4914f50d-49f9-6424-ca80-9486c45a138d"
-        },
-        "e336c6b8-418d-9340-d77f-7a9e4cfe0702": {
-            "name": "Default Sheriff",
-            "size": [
-                170,
-                75
-            ],
-            "link": "https://media.valorant-api.com/weapons/e336c6b8-418d-9340-d77f-7a9e4cfe0702/displayicon.png",
-            "defaultChroma": "5a59bd61-48a9-af61-c00f-4aa21deca9a8"
-        },
-        "2f59173c-4bed-b6c3-2191-dea9b58be9c7": {
-            "name": "Default Melee",
-            "size": [
-                200,
-                75
-            ],
-            "link": "https://media.valorant-api.com/weapons/2f59173c-4bed-b6c3-2191-dea9b58be9c7/displayicon.png",
-            "defaultChroma": "cac83e5c-47a1-3519-5420-1db1fdbc4892"
-        },
-        "29a0cfab-485b-f5d5-779a-b59f85e204a8": {
-            "name": "Default Classic",
-            "size": [
-                120,
-                75
-            ],
-            "link": "https://media.valorant-api.com/weapons/29a0cfab-485b-f5d5-779a-b59f85e204a8/displayicon.png",
-            "defaultChroma": "4b2d5b4f-4955-4208-286c-abadec250cdd"
-        },
-        "1baa85b4-4c70-1284-64bb-6481dfc3bb4e": {
-            "name": "Default Ghost",
-            "size": [
-                200,
-                65
-            ],
-            "link": "https://media.valorant-api.com/weapons/1baa85b4-4c70-1284-64bb-6481dfc3bb4e/displayicon.png",
-            "defaultChroma": "947a28b6-4e0f-61fb-e795-bc9a5e7b7129"
-        },
-        "63e6c2b6-4a8e-869c-3d4c-e38355226584": {
-            "name": "Default Odin",
-            "size": [
-                310,
-                75
-            ],
-            "link": "https://media.valorant-api.com/weapons/63e6c2b6-4a8e-869c-3d4c-e38355226584/displayicon.png",
-            "defaultChroma": "2f93861d-4b2f-2175-af0c-3ba0c736e257"
-        },
-        "55d8a0f4-4274-ca67-fe2c-06ab45efdf58": {
-            "name": "Default Ares",
-            "size": [
-                280,
-                60
-            ],
-            "link": "https://media.valorant-api.com/weapons/55d8a0f4-4274-ca67-fe2c-06ab45efdf58/displayicon.png",
-            "defaultChroma": "b33de820-4061-8b85-31ce-808f1a2c58f5"
-        },
-        "4ade7faa-4cf1-8376-95ef-39884480959b": {
-            "name": "Default Guardian",
-            "size": [
-                280,
-                60
-            ],
-            "link": "https://media.valorant-api.com/weapons/4ade7faa-4cf1-8376-95ef-39884480959b/displayicon.png",
-            "defaultChroma": "0f934388-418a-a9e7-42a7-21b27402e46c"
-        },
-        "ae3de142-4d85-2547-dd26-4e90bed35cf7": {
-            "name": "Default Bulldog",
-            "size": [
-                265,
-                65
-            ],
-            "link": "https://media.valorant-api.com/weapons/ae3de142-4d85-2547-dd26-4e90bed35cf7/displayicon.png",
-            "defaultChroma": "bf35f404-4a14-6953-ced2-5bafd21639a0"
-        },
-        "5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c": {
-            "name": "Default Outlaw",
-            "size": [
-                300,
-                60
-            ],
-            "link": "https://media.valorant-api.com/weapons/5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c/displayicon.png",
-            "defaultChroma": "66c8d241-4f7c-6652-3aaa-51bafffbd493"
-        },
-        "c4883e50-4494-202c-3ec3-6b8a9284f00b": {
-            "name": "Default Marshal",
-            "size": [
-                300,
-                60
-            ],
-            "link": "https://media.valorant-api.com/weapons/c4883e50-4494-202c-3ec3-6b8a9284f00b/displayicon.png",
-            "defaultChroma": "1afec971-4170-f29b-1c94-07a0eff270ab"
-        },
-        "462080d1-4035-2937-7c09-27aa2a5c27a7": {
-            "name": "Default Spectre",
-            "size": [
-                205,
-                70
-            ],
-            "link": "https://media.valorant-api.com/weapons/462080d1-4035-2937-7c09-27aa2a5c27a7/displayicon.png",
-            "defaultChroma": "a9aaccca-4cdc-02ea-1d7e-89bbacecc0e2"
-        },
-        "ec845bf4-4f79-ddda-a3da-0db3774b2794": {
-            "name": "Default Judge",
-            "size": [
-                270,
-                70
-            ],
-            "link": "https://media.valorant-api.com/weapons/ec845bf4-4f79-ddda-a3da-0db3774b2794/displayicon.png",
-            "defaultChroma": "b71ae8d6-44bb-aa4c-0d2a-dc9ed9e66410"
-        },
-        "910be174-449b-c412-ab22-d0873436b21b": {
-            "name": "Default Bucky",
-            "size": [
-                290,
-                50
-            ],
-            "link": "https://media.valorant-api.com/weapons/910be174-449b-c412-ab22-d0873436b21b/displayicon.png",
-            "defaultChroma": "3d8ffcfe-4786-0180-42d7-e1be18dd1cab"
-        },
-        "f7e1b454-4ad4-1063-ec0a-159e56b58941": {
-            "name": "Default Stinger",
-            "size": [
-                200,
-                65
-            ],
-            "link": "https://media.valorant-api.com/weapons/f7e1b454-4ad4-1063-ec0a-159e56b58941/displayicon.png",
-            "defaultChroma": "31bb2115-4c62-d37c-43c4-11b8fee7f212"
-        },
-        "44d4e95c-4157-0037-81b2-17841bf2e8e3": {
-            "name": "Default Frenzy",
-            "size": [
-                120,
-                70
-            ],
-            "link": "https://media.valorant-api.com/weapons/44d4e95c-4157-0037-81b2-17841bf2e8e3/displayicon.png",
-            "defaultChroma": "dc99ed5a-4d75-87a0-c921-75963ea3c1e1"
-        },
-        "42da8ccc-40d5-affc-beec-15aa47b42eda": {
-            "name": "Default Shorty",
-            "size": [
-                190,
-                60
-            ],
-            "link": "https://media.valorant-api.com/weapons/42da8ccc-40d5-affc-beec-15aa47b42eda/displayicon.png",
-            "defaultChroma": "95608504-4c8b-1408-1612-0f8200421c49"
-        }
-    },
     "CheckForUpdates": True,
     "Scaling": 100,
     "Theme": "System"
+}
+defaultSkins= {
+    "9c82e19d-4575-0200-1a81-3eacf00cf872": {
+        "name": "Default Vandal",
+        "defaultChroma": "19629ae1-4996-ae98-7742-24a240d41f99",
+        "size": [
+            275,
+            75
+        ],
+        "link": "https://media.valorant-api.com/weapons/9c82e19d-4575-0200-1a81-3eacf00cf872/displayicon.png"
+    },
+    "ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a": {
+        "name": "Default Phantom",
+        "size": [
+            275,
+            65
+        ],
+        "link": "https://media.valorant-api.com/weapons/ee8e8d15-496b-07ac-e5f6-8fae5d4c7b1a/displayicon.png",
+        "defaultChroma": "52221ba2-4e4c-ec76-8c81-3483506d5242"
+    },
+    "a03b24d3-4319-996d-0f8c-94bbfba1dfc7": {
+        "name": "Default Operator",
+        "size": [
+            300,
+            60
+        ],
+        "link": "https://media.valorant-api.com/weapons/a03b24d3-4319-996d-0f8c-94bbfba1dfc7/displayicon.png",
+        "defaultChroma": "4914f50d-49f9-6424-ca80-9486c45a138d"
+    },
+    "e336c6b8-418d-9340-d77f-7a9e4cfe0702": {
+        "name": "Default Sheriff",
+        "size": [
+            170,
+            75
+        ],
+        "link": "https://media.valorant-api.com/weapons/e336c6b8-418d-9340-d77f-7a9e4cfe0702/displayicon.png",
+        "defaultChroma": "5a59bd61-48a9-af61-c00f-4aa21deca9a8"
+    },
+    "2f59173c-4bed-b6c3-2191-dea9b58be9c7": {
+        "name": "Default Melee",
+        "size": [
+            200,
+            75
+        ],
+        "link": "https://media.valorant-api.com/weapons/2f59173c-4bed-b6c3-2191-dea9b58be9c7/displayicon.png",
+        "defaultChroma": "cac83e5c-47a1-3519-5420-1db1fdbc4892"
+    },
+    "29a0cfab-485b-f5d5-779a-b59f85e204a8": {
+        "name": "Default Classic",
+        "size": [
+            120,
+            75
+        ],
+        "link": "https://media.valorant-api.com/weapons/29a0cfab-485b-f5d5-779a-b59f85e204a8/displayicon.png",
+        "defaultChroma": "4b2d5b4f-4955-4208-286c-abadec250cdd"
+    },
+    "1baa85b4-4c70-1284-64bb-6481dfc3bb4e": {
+        "name": "Default Ghost",
+        "size": [
+            200,
+            65
+        ],
+        "link": "https://media.valorant-api.com/weapons/1baa85b4-4c70-1284-64bb-6481dfc3bb4e/displayicon.png",
+        "defaultChroma": "947a28b6-4e0f-61fb-e795-bc9a5e7b7129"
+    },
+    "63e6c2b6-4a8e-869c-3d4c-e38355226584": {
+        "name": "Default Odin",
+        "size": [
+            310,
+            75
+        ],
+        "link": "https://media.valorant-api.com/weapons/63e6c2b6-4a8e-869c-3d4c-e38355226584/displayicon.png",
+        "defaultChroma": "2f93861d-4b2f-2175-af0c-3ba0c736e257"
+    },
+    "55d8a0f4-4274-ca67-fe2c-06ab45efdf58": {
+        "name": "Default Ares",
+        "size": [
+            280,
+            60
+        ],
+        "link": "https://media.valorant-api.com/weapons/55d8a0f4-4274-ca67-fe2c-06ab45efdf58/displayicon.png",
+        "defaultChroma": "b33de820-4061-8b85-31ce-808f1a2c58f5"
+    },
+    "4ade7faa-4cf1-8376-95ef-39884480959b": {
+        "name": "Default Guardian",
+        "size": [
+            280,
+            60
+        ],
+        "link": "https://media.valorant-api.com/weapons/4ade7faa-4cf1-8376-95ef-39884480959b/displayicon.png",
+        "defaultChroma": "0f934388-418a-a9e7-42a7-21b27402e46c"
+    },
+    "ae3de142-4d85-2547-dd26-4e90bed35cf7": {
+        "name": "Default Bulldog",
+        "size": [
+            265,
+            65
+        ],
+        "link": "https://media.valorant-api.com/weapons/ae3de142-4d85-2547-dd26-4e90bed35cf7/displayicon.png",
+        "defaultChroma": "bf35f404-4a14-6953-ced2-5bafd21639a0"
+    },
+    "5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c": {
+        "name": "Default Outlaw",
+        "size": [
+            300,
+            60
+        ],
+        "link": "https://media.valorant-api.com/weapons/5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c/displayicon.png",
+        "defaultChroma": "66c8d241-4f7c-6652-3aaa-51bafffbd493"
+    },
+    "c4883e50-4494-202c-3ec3-6b8a9284f00b": {
+        "name": "Default Marshal",
+        "size": [
+            300,
+            60
+        ],
+        "link": "https://media.valorant-api.com/weapons/c4883e50-4494-202c-3ec3-6b8a9284f00b/displayicon.png",
+        "defaultChroma": "1afec971-4170-f29b-1c94-07a0eff270ab"
+    },
+    "462080d1-4035-2937-7c09-27aa2a5c27a7": {
+        "name": "Default Spectre",
+        "size": [
+            205,
+            70
+        ],
+        "link": "https://media.valorant-api.com/weapons/462080d1-4035-2937-7c09-27aa2a5c27a7/displayicon.png",
+        "defaultChroma": "a9aaccca-4cdc-02ea-1d7e-89bbacecc0e2"
+    },
+    "ec845bf4-4f79-ddda-a3da-0db3774b2794": {
+        "name": "Default Judge",
+        "size": [
+            270,
+            70
+        ],
+        "link": "https://media.valorant-api.com/weapons/ec845bf4-4f79-ddda-a3da-0db3774b2794/displayicon.png",
+        "defaultChroma": "b71ae8d6-44bb-aa4c-0d2a-dc9ed9e66410"
+    },
+    "910be174-449b-c412-ab22-d0873436b21b": {
+        "name": "Default Bucky",
+        "size": [
+            290,
+            50
+        ],
+        "link": "https://media.valorant-api.com/weapons/910be174-449b-c412-ab22-d0873436b21b/displayicon.png",
+        "defaultChroma": "3d8ffcfe-4786-0180-42d7-e1be18dd1cab"
+    },
+    "f7e1b454-4ad4-1063-ec0a-159e56b58941": {
+        "name": "Default Stinger",
+        "size": [
+            200,
+            65
+        ],
+        "link": "https://media.valorant-api.com/weapons/f7e1b454-4ad4-1063-ec0a-159e56b58941/displayicon.png",
+        "defaultChroma": "31bb2115-4c62-d37c-43c4-11b8fee7f212"
+    },
+    "44d4e95c-4157-0037-81b2-17841bf2e8e3": {
+        "name": "Default Frenzy",
+        "size": [
+            120,
+            70
+        ],
+        "link": "https://media.valorant-api.com/weapons/44d4e95c-4157-0037-81b2-17841bf2e8e3/displayicon.png",
+        "defaultChroma": "dc99ed5a-4d75-87a0-c921-75963ea3c1e1"
+    },
+    "42da8ccc-40d5-affc-beec-15aa47b42eda": {
+        "name": "Default Shorty",
+        "size": [
+            190,
+            60
+        ],
+        "link": "https://media.valorant-api.com/weapons/42da8ccc-40d5-affc-beec-15aa47b42eda/displayicon.png",
+        "defaultChroma": "95608504-4c8b-1408-1612-0f8200421c49"
+    }
 }
 # get paths
 appDataFolderName = 'FastPick'
@@ -1956,7 +1956,7 @@ def inGamePlayerObj(player):
         config = json.load(f)
         agents = config['agents']
         skinsOrder = config['skinsOrder']
-    deWeapons = defaultConfig['defaultSkins']
+    deWeapons = defaultSkins
     agentID = player['CharacterID']
     agent = findKeysByValue(agents, agentID)[0]
     playerSide = player['TeamID']
