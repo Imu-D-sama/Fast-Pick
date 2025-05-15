@@ -650,8 +650,8 @@ def settingsMenu():
     settingsWindow.resizable(0, 0)
     settingsWindow.after(250, lambda: settingsWindow.iconbitmap(image))
     settingsWindow.after(250, settingsWindow.focus_force)
-    settFrame = customtkinter.CTkFrame(settingsWindow, height=260, width=480)
-    settFrame.pack_propagate(False)
+    settFrame = customtkinter.CTkScrollableFrame(settingsWindow, height=245, width=480)
+    settFrame.pack_propagate(True)
     settFrame.pack(padx=10, pady=8)
     settDoneButton = customtkinter.CTkButton(settingsWindow, text="Done", command=settingsWindow.destroy)
     settDoneButton.pack(padx=10, pady=3)
@@ -681,6 +681,24 @@ def settingsMenu():
     scaleButton = customtkinter.CTkSegmentedButton(settFrame, width=30, height=20, values=["50", "75", "100", "125", "150"], command= changeScaleButton)
     scaleButton.pack(pady=7)
     scaleButton.set(str(config['Scaling']))
+    
+    regionSettChange = customtkinter.CTkLabel(settFrame, text="Region:")
+    regionSettChange.pack(pady=7)
+    def changeRegionSett(v):
+        if (config['region'] == v): 
+            return
+        config['region'] = regions[v]
+        comboboxRegion.set(v)
+        print(f'Changed Region to {v}')
+        with open(configPath, 'w') as file:
+            json.dump(config, file, indent=4)
+        showRegionSelect(relogin=True)
+    regionSelectorSett = customtkinter.CTkSegmentedButton(settFrame, width=30, height=20, values=list(regions.keys()), command= changeRegionSett)
+    regionSelectorSett.pack(pady=7)
+    with open(configPath, 'r') as f:
+        newR = json.load(f)
+        region = newR['region']
+    regionSelectorSett.set(str(findKeysByValue(regions, region)[0]))
       
 settImg = customtkinter.CTkImage(light_image=settingsImage, dark_image=settingsImage, size=(20,20))
 settingsButton = customtkinter.CTkButton(app, text="", image=settImg, width=22, fg_color="transparent", command=settingsMenu)
@@ -720,7 +738,7 @@ def selectRegion():
         print(f'{e}')
         return
     showSelected()
-def showRegionSelect(fail = False):
+def showRegionSelect(fail = False, relogin = False):
     print('Back to region select')
     util_frame.pack_forget()
     util_frame.place_forget()
@@ -733,10 +751,14 @@ def showRegionSelect(fail = False):
     
     region_frame.pack(padx=20, pady=20)
     region_frame.place(relx=0.03, rely=0.5)
-    if fail == True:
+    if fail == True or relogin == True:
         buttonRegion.configure(region_frame, text="Retry", command=selectRegion)
-        buttonRegion.place(relx=0.424,rely=0.38)
         labelRegionStats.place(relx=0.507,rely=0.28)
+        if relogin == True:
+            buttonRegion.configure(region_frame, text="Relogin", command=selectRegion)
+            labelRegionStats.configure(text="Please press Relogin to confirm the region", text_color=white_text)
+            labelRegionStats.place(relx=0.507,rely=0.28)
+        buttonRegion.place(relx=0.424,rely=0.38)
         comboboxRegion.pack_forget()
         comboboxRegion.place_forget()
         labelRegion.pack_forget()
