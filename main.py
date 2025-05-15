@@ -2141,7 +2141,7 @@ def stop():
 def checkSides():
     sessionState = client.fetch_presence(client.puuid)
     if not sessionState:
-        showRegionSelect()
+        showRegionSelect(True)
         labelRegionStats.configure(text=startTheGame, text_color=red_text)
         return
     else:
@@ -2165,7 +2165,7 @@ def checkSides():
 def dodgeMatch():
     sessionState = client.fetch_presence(client.puuid)
     if not sessionState:
-        showRegionSelect()
+        showRegionSelect(True)
         labelRegionStats.configure(text=startTheGame, text_color=red_text)
         return
     else:
@@ -2190,7 +2190,7 @@ def getLoadoutsPro():
     try:
         presence = client.fetch_presence(client.puuid)
         if not presence:
-            showRegionSelect()
+            showRegionSelect(True)
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
             return
         else:
@@ -2287,7 +2287,7 @@ def getHiddenNames():
     sessionState = client.fetch_presence(client.puuid)
     players = []
     if not sessionState:
-        showRegionSelect()
+        showRegionSelect(True)
         labelRegionStats.configure(text=startTheGame, text_color=red_text)
         return
     else:
@@ -2370,7 +2370,7 @@ def getHiddenNames():
 def getHiddenNamesWithStatsPro():
     sessionState = client.fetch_presence(client.puuid)
     if not sessionState:
-        showRegionSelect()
+        showRegionSelect(True)
         labelRegionStats.configure(text=startTheGame, text_color=red_text)
         return
     else:
@@ -2507,7 +2507,7 @@ def start():
             print("looping")
             sessionState = client.fetch_presence(client.puuid)
             if not sessionState:
-                showRegionSelect()
+                showRegionSelect(True)
                 labelRegionStats.configure(text=startTheGame, text_color=red_text)
                 return
             else:
@@ -2547,7 +2547,7 @@ def start():
                 print("YOU ARE NOT IN PREGAME")
                 continue
             running = False
-            showRegionSelect()
+            showRegionSelect(True)
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
             print(f"Error in Start: {e}")
             
