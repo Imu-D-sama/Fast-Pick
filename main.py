@@ -60,6 +60,7 @@ defaultConfig = {
     },
     "region": "eu",
     "agent": "None",
+    "instalockMode": "Lock",
     "ran": False,
     "mapMode": "Normal",
     "mapAgentSelect": {
@@ -543,6 +544,8 @@ def AddedValues():
             currentConfig['CheckForUpdates'] = defaultConfig['CheckForUpdates']
         if 'Theme' not in currentConfig:
             currentConfig['Theme'] = "System"
+        if 'instalockMode' not in currentConfig:
+            currentConfig['instalockMode'] = "Lock"
         with open(configPath, 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Values")
@@ -597,6 +600,7 @@ try:
         allowedUpdates = config['CheckForUpdates']
         Scaling = config['Scaling']
         Theme = config['Theme']
+        instalockMode = config['instalockMode']
 except KeyError as e:
     print(e)
     with open(configPath, 'w') as file:
@@ -614,6 +618,7 @@ except KeyError as e:
         allowedUpdates = config['CheckForUpdates']
         Scaling = config['Scaling']
         Theme = config['Theme']
+        instalockMode['instalockMode']
 
 # app colors
 customtkinter.set_appearance_mode(Theme)
@@ -699,6 +704,22 @@ def settingsMenu():
         newR = json.load(f)
         region = newR['region']
     regionSelectorSett.set(str(findKeysByValue(regions, region)[0]))
+    
+    instalockSettLabel = customtkinter.CTkLabel(settFrame, text="Instalock Mode:")
+    instalockSettLabel.pack(pady=7)
+    def changeLockModeSett(v):
+        if (config['instalockMode'] == v): 
+            return
+        config['instalockMode'] = v
+        print(f'Changed Instalock Mode to {v}')
+        with open(configPath, 'w') as file:
+            json.dump(config, file, indent=4)
+    lockSelectorSett = customtkinter.CTkSegmentedButton(settFrame, values=["Lock", "Hover"], command= changeLockModeSett)
+    lockSelectorSett.pack(pady=7)
+    with open(configPath, 'r') as f:
+        newR = json.load(f)
+        instalockMode = newR['instalockMode']
+    lockSelectorSett.set(instalockMode)
       
 settImg = customtkinter.CTkImage(light_image=settingsImage, dark_image=settingsImage, size=(20,20))
 settingsButton = customtkinter.CTkButton(app, text="", image=settImg, width=22, fg_color="transparent", command=settingsMenu)
@@ -2538,7 +2559,8 @@ def start():
                         continue
                     buttonStartText.configure(text='Agent Select Screen Found', text_color= white_text)
                     client.pregame_select_character(agents[preferredAgent])
-                    client.pregame_lock_character(agents[preferredAgent])
+                    if instalockMode == "Lock":
+                        client.pregame_lock_character(agents[preferredAgent])
                     playedMatches.append(client.pregame_fetch_match()['ID'])
                     ally = client.pregame_fetch_match()['AllyTeam']
                     ally_team = ally['TeamID']
