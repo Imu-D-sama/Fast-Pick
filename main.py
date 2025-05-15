@@ -657,43 +657,30 @@ def settingsMenu():
     settDoneButton.pack(padx=10, pady=3)
     themeButtonsText = customtkinter.CTkLabel(settFrame, text=f"Theme({config['Theme']}):")
     themeButtonsText.pack(pady=7)
-    buttonFrameTheme = customtkinter.CTkFrame(settFrame, fg_color="transparent")
-    buttonFrameTheme.pack(pady=5)
-    for i in range(1, 4):
-        ButtonsTheme = "System"
-        if (i == 2):
-            ButtonsTheme = "Dark"
-        elif (i == 3):
-            ButtonsTheme = "Light"
-        def changeThemeFunc(v):
-            if (v == config['Theme']):
-                return
-            customtkinter.set_appearance_mode(v)
-            config['Theme'] = v
-            with open(configPath, 'w') as file:
-                json.dump(config, file, indent=4)
-        difThemeButton = customtkinter.CTkButton(buttonFrameTheme, width=30, height=20, text=ButtonsTheme, command=lambda ButtonsTheme=ButtonsTheme: changeThemeFunc(ButtonsTheme))
-        difThemeButton.pack(side="left", padx=20)
+    def changeThemeFunc(v):
+        customtkinter.set_appearance_mode(v)
+        config['Theme'] = v
+        with open(configPath, 'w') as file:
+            json.dump(config, file, indent=4)
+    difThemeButton = customtkinter.CTkSegmentedButton(settFrame, command=changeThemeFunc, values=["System", "Light", "Dark"])
+    difThemeButton.pack(pady=7)
+    difThemeButton.set(config['Theme'])
             
     scaleButtonsText = customtkinter.CTkLabel(settFrame, text=f"Scale({config['Scaling']}):")
     scaleButtonsText.pack(pady=7)
-    buttonFrameScale = customtkinter.CTkFrame(settFrame, fg_color="transparent")
-    buttonFrameScale.pack(pady=5)
-    for i in range(1, 6):
-        steps = 25 * i
-        defaultNumber = 25 + steps
-        def changeScaleButton(v):
-            scaleButtonsText.configure(text=f"Scale({v}):")
-            if (config['Scaling'] == v): 
-                return
-            config['Scaling'] = v
-            customtkinter.set_window_scaling(v / 100)
-            customtkinter.set_widget_scaling(v / 100)
-            with open(configPath, 'w') as file:
-                json.dump(config, file, indent=4)
-        scaleButton = customtkinter.CTkButton(buttonFrameScale, width=30, height=20, text=str(defaultNumber),
-                                              command=lambda defaultNumber=defaultNumber: changeScaleButton(defaultNumber))
-        scaleButton.pack(side="left", padx=20)
+    def changeScaleButton(v):
+        v = int(v)
+        scaleButtonsText.configure(text=f"Scale({v}):")
+        if (config['Scaling'] == v): 
+            return
+        config['Scaling'] = v
+        customtkinter.set_window_scaling(v / 100)
+        customtkinter.set_widget_scaling(v / 100)
+        with open(configPath, 'w') as file:
+            json.dump(config, file, indent=4)
+    scaleButton = customtkinter.CTkSegmentedButton(settFrame, width=30, height=20, values=["50", "75", "100", "125", "150"], command= changeScaleButton)
+    scaleButton.pack(pady=7)
+    scaleButton.set(str(config['Scaling']))
       
 settImg = customtkinter.CTkImage(light_image=settingsImage, dark_image=settingsImage, size=(20,20))
 settingsButton = customtkinter.CTkButton(app, text="", image=settImg, width=22, fg_color="transparent", command=settingsMenu)
