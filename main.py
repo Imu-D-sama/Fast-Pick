@@ -729,12 +729,11 @@ def selectRegion():
         client.activate()
         print(f"logged in with region: {newRegion}")
     except Exception as e:
-        labelRegionStats.configure(text=startTheGame, text_color=white_text)
+        labelRegionStats.configure(text=startTheGame, text_color=red_text)
         print(f'{e}')
         return
-    buttonStartRegion.configure(text=f"Change Region {findKeysByValue(regions, region)[0]}", command= showRegionSelect)
     showSelected()
-def showRegionSelect():
+def showRegionSelect(fail = False):
     print('Back to region select')
     util_frame.pack_forget()
     util_frame.place_forget()
@@ -747,6 +746,19 @@ def showRegionSelect():
     
     region_frame.pack(padx=20, pady=20)
     region_frame.place(relx=0.03, rely=0.5)
+    if fail == True:
+        buttonRegion.configure(region_frame, text="Retry", command=selectRegion)
+        buttonRegion.place(relx=0.424,rely=0.38)
+        labelRegionStats.place(relx=0.507,rely=0.28)
+        comboboxRegion.pack_forget()
+        comboboxRegion.place_forget()
+        labelRegion.pack_forget()
+        labelRegion.place_forget()
+    else:
+        comboboxRegion.place(relx=0.424,rely=0.359)
+        comboboxRegion.set(value=findKeysByValue(regions, region)[0])
+        buttonRegion.configure(region_frame, text="Select", command=selectRegion)
+        buttonRegion.place(relx=0.424,rely=0.5)
 region_frame = customtkinter.CTkFrame(app, 848, 280)
 region_frame.pack_propagate(False)
 comboboxRegion = customtkinter.CTkComboBox(region_frame, values=list(regions.keys()), state="readonly")
@@ -1892,8 +1904,6 @@ buttonStartDodge = customtkinter.CTkButton(master=start_frame, text="Dodge", sta
 buttonStartDodge.place(relx=0.35, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartCheck = customtkinter.CTkButton(master=start_frame, text="Check Side", state="disabled", width= 85)
 buttonStartCheck.place(relx=0.65, rely=0.4, anchor= customtkinter.CENTER)
-buttonStartRegion = customtkinter.CTkButton(master=start_frame, text=f"Change Region {findKeysByValue(regions, region)[0]}", command= showRegionSelect)
-buttonStartRegion.place(relx=0.88, rely=0.4, anchor= customtkinter.CENTER)
 buttonStartText = customtkinter.CTkLabel(master=start_frame, text="Pick your Agent or Action and Start :)", text_color=white_text)
 buttonStartText.place(relx=0.5, rely=0.7, anchor= customtkinter.CENTER)
 
@@ -2596,7 +2606,7 @@ elif ranBefore == True:
         if debug == True :
             showSelected()
         else:
-            showRegionSelect()
+            showRegionSelect(True)
             labelRegionStats.configure(text=startTheGame, text_color=red_text)
             print(f'{e}')
 
