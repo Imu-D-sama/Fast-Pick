@@ -2520,6 +2520,7 @@ def start():
         currentMode = config['mapMode']
         existingMaps = config['mapAgentSelect']
         currentDelay = config['delay']
+        instalockMode = config['instalockMode']
     
     buttonStart.configure(text="Stop", command=stop)
     buttonStartText.configure(text="Waiting For a Match to Begin...", text_color=white_text)
