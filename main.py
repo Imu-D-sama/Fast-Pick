@@ -74,7 +74,8 @@ defaultConfig = {
         "Sunset": "None",
         "Pearl": "None",
         "Icebox": "None",
-        "Haven": "None"
+        "Haven": "None",
+        "Corrode": "None"
     },
     "delay": 4.0,
     "skinsOrder": [
