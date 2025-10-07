@@ -2647,7 +2647,7 @@ elif ranBefore == True:
 
 # Check For Updates logic
 
-current_ver = 3.0
+current_ver = 3.1
 versionLabel = customtkinter.CTkButton(app, text="", anchor="w", fg_color="transparent")
 versionLabel.place(rely=0.956, relx=0.008)
 def updateApp():
