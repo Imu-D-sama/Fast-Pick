@@ -47,6 +47,7 @@ defaultConfig = {
             "Harbor": "95B78ED7-4637-86D9-7E41-71BA8C293152",
             "KAY/O": "601dbbe7-43ce-be57-2a40-4abd24953621",
             "Vyse": "efba5359-4016-a1e5-7626-b1ae76895940",
+            "Veto": "92EEEF5D-43B5-1D4A-8D03-B3927A09034B",
             "Tejo": "B444168C-4E35-8076-DB47-EF9BF368F384",
             "Waylay": "DF1CB487-4902-002E-5C17-D28E83E78588"
         },
