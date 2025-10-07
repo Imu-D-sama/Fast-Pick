@@ -505,7 +505,11 @@ def updateAgents():
         for agent in apiAgents:
             if agent['displayName'] not in currentConfig['agents'].keys():
                 currentConfig['agents'][agent['displayName']] = agent['uuid']
-                print(f"Added {agent['displayName']}")
+                print(f"Added {agent['displayName']} from API")
+        for agent in defaultConfig["agents"]:
+            if agent not in currentConfig['agents'].keys():
+                currentConfig['agents'][agent] = defaultConfig['agents'][agent]
+                print(f"Added {agent} from default config")
         with open(configPath, 'w') as file:
             json.dump(currentConfig, file, indent=4)
         print("Finished Updating Agents")
