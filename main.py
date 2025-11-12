@@ -561,7 +561,7 @@ def AddedValues():
 def getSessionState(client):
     presence = client.fetch_presence(client.puuid)
     if presence:
-        return presence['sessionLoopState']
+        return presence['matchPresenceData']['sessionLoopState']
     else:
         return None
 # the img in base64 cuz why not :DDD
