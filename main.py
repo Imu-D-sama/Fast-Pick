@@ -11,6 +11,8 @@ import base64
 import pyperclip
 import webbrowser
 import copy
+import ctypes
+import win32gui, win32con, win32api
 from random import choice
 from valclient.client import Client
 from PIL import Image, ImageDraw
@@ -557,6 +559,15 @@ def AddedValues():
         print("Finished Updating Values")
     except Exception as e:
         print(e)
+# function to keep only one window open with a mutex
+def oneProcessChecking():
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, "FastPickMainProcess")
+    if ctypes.windll.kernel32.GetLastError() == 183:
+        hwnd = win32gui.FindWindow(None, "Fast Pick")
+        if hwnd:
+            win32api.SendMessage(hwnd, win32con.WM_SYSCOMMAND, win32con.SC_RESTORE, 0)
+            win32gui.SetForegroundWindow(hwnd)
+        sys.exit()
 # function to get session state Properly(fix after new update)
 def getSessionState(client):
     presence = client.fetch_presence(client.puuid)
@@ -574,6 +585,9 @@ def settingsLogo():
     image = Image.open(BytesIO(image_data))
     return image
 settingsImage = settingsLogo()
+#
+oneProcessChecking()
+#
 # call config files
 updateAgents()
 updateMaps()

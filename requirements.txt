@@ -3,3 +3,4 @@ requests
 valclient
 Pillow
 pyperclip
+pywin32
